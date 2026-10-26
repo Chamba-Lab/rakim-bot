@@ -2,7 +2,7 @@
 name = "rakim-bot"
 version = "0.0.0"
 description = "Rakim Bot: Discord bot of the Chamba Lab community"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "discord.py>=2.7,<3",
     "pydantic-settings>=2.6,<3",
@@ -10,6 +10,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=2.4.0",
     "pytest>=8",
     "ruff>=0.8",
 ]
@@ -22,9 +23,19 @@ package = false
 line-length = 88
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP"]
+# E/F: errores básicos · I: imports · B: bugs comunes · UP: sintaxis moderna · S: seguridad (bandit)
+# ASYNC: errores con asyncio · SIM: simplificaciones · RUF: reglas propias de ruff
+select = ["E", "F", "I", "B", "UP", "S", "ASYNC", "SIM", "RUF"]
 # Las líneas largas de comentarios no se parten solas; el formateador cuida el código.
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # en las pruebas `assert` es lo esperado
+
+[tool.mypy]
+strict = true
+files = ["rakim"]
+plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
