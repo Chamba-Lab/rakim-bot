@@ -1,0 +1,5 @@
+name: Rakim Bot
+stack:
+    language: Python 3.14
+    library: discord.py 2.x
+    tooling: uv, pytest, ruff, mypy
