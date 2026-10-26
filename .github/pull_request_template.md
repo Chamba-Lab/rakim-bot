@@ -12,7 +12,7 @@
 ## Checklist
 
 - [ ] La rama parte de `master` actualizada
-- [ ] `uv run ruff check .`, `uv run ruff format --check .` y `uv run pytest` pasan en local
+- [ ] `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy` y `uv run pytest` pasan en local
 - [ ] El título del PR sigue Conventional Commits (`feat: ...`, `fix: ...`)
 - [ ] Actualicé `AGENTS.md` / `README.md` / `docs/` si el cambio lo requiere
 - [ ] Probé el cambio en un servidor de pruebas de Discord (si toca eventos o mensajes)

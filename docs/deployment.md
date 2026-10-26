@@ -6,10 +6,10 @@ Rakim corre en un **Droplet de DigitalOcean** (un servidor virtual pequeño) den
 | :------------ | :----------------------------------------------------------------------------------------- |
 | Servidor      | Droplet Basic, **US$4/mes** (512 MiB, 1 vCPU, 10 GiB) → **US$48/año**                      |
 | Sistema       | Ubuntu 24.04 LTS, con swap de 1 GB y actualizaciones de seguridad automáticas              |
-| Runtime       | Docker, imagen `python:3.13-slim` (Python 3.13, con los parches de seguridad)             |
+| Runtime       | Docker, imagen `python:3.14-slim` (Python 3.14.10 o posterior; la construcción falla si trae menos) |
 | Estado        | Volumen de Docker `rakim-data` (el aviso de bump pendiente)                                |
 | Configuración | `/opt/rakim-bot/.env`, solo en el servidor                                                 |
-| Despliegue    | GitHub Actions: `docker build` → `docker save \| ssh docker load` → `docker compose up -d` |
+| Despliegue    | GitHub Actions: `docker build` → `docker save \| ssh docker load` → `docker compose up -d`. **Apagado por defecto** (sección 6) |
 
 Si el bot se queda sin memoria (lo verás como reinicios del contenedor), el Droplet se amplía a US$6 (1 GiB) desde el panel de DigitalOcean sin reconstruir nada.
 
@@ -87,7 +87,15 @@ gh secret set DEPLOY_KNOWN_HOSTS < known_hosts.txt
 
 ## 6. Primer despliegue
 
-En GitHub: **Actions > Deploy > Run workflow** (o fusiona un PR en `master`). El flujo valida, construye la imagen, la envía al servidor y la levanta. Si el bot no queda corriendo (por ejemplo, un `.env` incompleto), el último paso falla en rojo y muestra los logs.
+**El despliegue está apagado por defecto.** El flujo `Deploy` no hace nada (sus jobs salen como omitidos) mientras la variable `DEPLOY_ENABLED` no valga `true`, ni al fusionar en `master` ni a mano. Así se puede fusionar el PR del despliegue y hacer los pasos 1 a 5 con calma. Cuando todo esté listo:
+
+```bash
+gh variable set DEPLOY_ENABLED --body "true"
+```
+
+Para apagarlo de nuevo: `gh variable set DEPLOY_ENABLED --body "false"` (o borrar la variable).
+
+Con la variable en `true`: **Actions > Deploy > Run workflow** (o fusiona un PR en `master`). El flujo valida, construye la imagen, la envía al servidor y la levanta. Si el bot no queda corriendo (por ejemplo, un `.env` incompleto), el último paso falla en rojo y muestra los logs.
 
 Comprueba en el servidor:
 
