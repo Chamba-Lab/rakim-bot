@@ -1,0 +1,100 @@
+name: PR Checks
+
+# Lint, tipos, pruebas y construcción de la imagen corren al abrir el PR o al subir commits.
+# El título se valida en pr-title.yml, que además escucha las ediciones: así editar
+# la descripción o el título no relanza todo.
+
+on:
+    pull_request:
+        branches:
+            - master
+        types: [opened, synchronize, reopened]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: pr-checks-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    validate:
+        name: Lint & Test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Setup Python
+              uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+              with:
+                  python-version: "3.14"
+
+            - name: Install uv
+              run: python -m pip install uv==0.13.5
+
+            # uv usa el Python de arriba y no descarga otro: el de uv puede ir días atrás de un
+            # parche de seguridad. `--frozen` instala exactamente lo que dice uv.lock (con hashes).
+            - name: Install dependencies
+              env:
+                  UV_PYTHON_DOWNLOADS: never
+                  UV_PYTHON_PREFERENCE: only-system
+              run: |
+                  uv lock --check
+                  uv sync --frozen
+
+            - name: Lint
+              run: |
+                  uv run ruff check .
+                  uv run ruff format --check .
+
+            - name: Types
+              run: uv run mypy
+
+            - name: Test
+              run: uv run pytest
+
+    # Comprueba que la imagen que se desplegará se construye; no la publica.
+    docker:
+        name: Docker build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Build image
+              run: docker build --pull --tag rakim-bot:ci .
+
+    # Solo avisa: no es un check obligatorio y nunca falla, porque a veces hay
+    # alertas sin parche upstream que no deben frenar un PR.
+    audit:
+        name: Dependency audit (advisory)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Install uv
+              run: python3 -m pip install uv==0.13.5
+
+            - name: pip-audit
+              run: |
+                  uv export --frozen --no-dev --no-hashes -o requirements.txt
+                  if uvx pip-audit -r requirements.txt --no-deps --disable-pip > audit.txt 2>&1; then
+                      echo "✅ pip-audit: sin vulnerabilidades conocidas." >> "$GITHUB_STEP_SUMMARY"
+                  else
+                      echo "::warning title=pip-audit::Hay dependencias con vulnerabilidades conocidas. El detalle está en el resumen de este job."
+                      {
+                          echo "## ⚠️ pip-audit"
+                          echo
+                          echo '```'
+                          cat audit.txt
+                          echo '```'
+                      } >> "$GITHUB_STEP_SUMMARY"
+                  fi

@@ -27,7 +27,7 @@ Para probar contra Discord necesitas un bot y un servidor de pruebas propios, no
     ```
 4. **Abre un Pull Request hacia `master`** y completa la plantilla; marca solo lo que verificaste. Una persona del equipo revisa.
 
-**Nunca hagas push directo a `master`**, tampoco el equipo ni los agentes de IA: todo entra por Pull Request, y cada fusión en `master` despliega el bot.
+**Nunca hagas push directo a `master`**, tampoco el equipo ni los agentes de IA: todo entra por Pull Request, y, con el despliegue activado, cada fusión en `master` despliega el bot.
 
 ## Commits y título del PR
 

@@ -47,7 +47,7 @@ El token y los IDs viven en `.env` (que no se sube al repo; solo `.env.example`)
 
 ## Despliegue
 
-Rakim corre en un **Droplet de DigitalOcean de US$4/mes (US$48 al año)** dentro de un contenedor Docker, y cada fusión en `master` lo actualiza sola con GitHub Actions (valida, construye la imagen, la envía por SSH y reinicia). Una sola instancia a la vez: dos procesos con el mismo token saludarían y registrarían todo por duplicado. Guía paso a paso: [`docs/deployment.md`](./docs/deployment.md).
+Rakim corre en un **Droplet de DigitalOcean de US$4/mes (US$48 al año)** dentro de un contenedor Docker, y, **una vez activado** (`DEPLOY_ENABLED=true`; nace apagado), cada fusión en `master` lo actualiza sola con GitHub Actions (valida, construye la imagen, la envía por SSH y reinicia). Una sola instancia a la vez: dos procesos con el mismo token saludarían y registrarían todo por duplicado. Guía paso a paso: [`docs/deployment.md`](./docs/deployment.md).
 
 ## Estructura
 
