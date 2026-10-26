@@ -160,3 +160,21 @@ def test_clears_the_reminder_even_if_sending_fails(tmp_path):
         return state
 
     assert run(scenario()).bump_due_at is None
+
+
+def test_recognises_the_real_disboard_confirmation():
+    """Texto real de Disboard, copiado de una captura del 26 oct 2026 (va en el embed)."""
+    from rakim.config import Settings
+
+    embed_title = "DISBOARD: The Public Server List"
+    embed_description = (
+        "Bump done! 👍\n"
+        "Check it out [on DISBOARD](https://disboard.org/server/1).\n\n"
+        "**Make your listing feel like your server.**\n"
+        "Customize this server's listing, get review controls, and explore server insights."
+    )
+    default_pattern = Settings.model_fields["bump_success_pattern"].default
+    pattern = re.compile(default_pattern, re.IGNORECASE)
+    assert is_bump_success(
+        DISBOARD, [embed_title, embed_description], DISBOARD, pattern
+    )
