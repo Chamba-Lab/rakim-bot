@@ -1,0 +1,20 @@
+# build output
+dist/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# runtime state of the bot
+data/
+
+# OS and editors
+.DS_Store
+.idea/

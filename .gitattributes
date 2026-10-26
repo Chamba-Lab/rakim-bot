@@ -1,0 +1,2 @@
+# Normaliza finales de línea a LF en todos los sistemas (evita fallos de Prettier en Windows).
+* text=auto eol=lf
