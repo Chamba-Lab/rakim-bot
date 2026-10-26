@@ -63,5 +63,5 @@ def test_reports_every_problem_at_once(monkeypatch):
 
 
 def test_rejects_invalid_invite_labels(monkeypatch):
-    with pytest.raises(Exception, match="invite_labels|INVITE_LABELS"):
+    with pytest.raises(Exception, match=r"invite_labels|INVITE_LABELS"):
         settings(monkeypatch, INVITE_LABELS="no es json")

@@ -3,6 +3,8 @@
 Voz de Rakim: breve, seca y cálida; español neutro, tuteo y un solo emoji como máximo.
 """
 
+from datetime import datetime
+
 import discord
 
 from .config import Settings
@@ -57,7 +59,7 @@ def describe_invites(candidates: list[InviteInfo], labels: dict[str, str]) -> st
     return text + f" · {invite.uses} {'uso' if invite.uses == 1 else 'usos'}"
 
 
-def _when(dt) -> str:
+def _when(dt: datetime) -> str:
     """Marca de tiempo de Discord: cada persona la ve en su hora local."""
     return discord.utils.format_dt(dt, "R")
 

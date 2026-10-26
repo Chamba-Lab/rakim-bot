@@ -1,4 +1,5 @@
 import asyncio
+from typing import Any
 
 import discord
 from discord.ext import commands
@@ -42,7 +43,7 @@ class RakimBot(commands.Bot):
         for name in EVENTS:
             await self.load_extension(f"rakim.events.{name}")
 
-    async def send(self, channel_id: int, **kwargs) -> None:
+    async def send(self, channel_id: int, **kwargs: Any) -> None:
         """Publica en un canal por su ID; falla con claridad si no se puede escribir ahí."""
         channel = self.get_channel(channel_id) or await self.fetch_channel(channel_id)
         if not isinstance(channel, discord.abc.Messageable):
