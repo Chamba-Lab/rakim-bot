@@ -18,7 +18,7 @@ Breve, seca y algo gruñona, pero cálida. Español neutro, tuteo, sin jerga loc
 
 ## 3. Stack
 
-- **TypeScript** (estricto, ESM con `NodeNext`) sobre **Node.js >= 22.12** y npm. Los scripts usan `--env-file-if-exists`, que pide Node 22.9 o superior.
+- **TypeScript** (estricto, ESM con `NodeNext`) sobre **Node.js 22.23.4, 24.22.1, 26.12.1 o posterior de su línea** y npm (`engines` en `package.json`). Ese mínimo no es capricho: son las versiones con el parche de seguridad de octubre de 2026 (ver [`docs/decisions.md`](./docs/decisions.md#entorno)). Los scripts usan `--env-file-if-exists`, que pide Node 22.9 o superior.
 - **`discord.js` 14**: es la biblioteca comunitaria más usada. Discord no mantiene SDKs oficiales.
 - **`zod`** valida la configuración del entorno al arrancar.
 - **Vitest** para pruebas; **ESLint** (`typescript-eslint`) y **Prettier** para estilo (4 espacios, comillas dobles, punto y coma, igual que `Chamba-Lab/home`).

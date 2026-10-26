@@ -12,7 +12,7 @@ El detalle de cada función está en [`docs/architecture.md`](./docs/architectur
 
 ## Instalación
 
-Requisitos: **Node.js >= 22.12** y npm.
+Requisitos: **Node.js 22.23.4, 24.22.1, 26.12.1 o posterior de su línea** (las versiones con el parche de seguridad de octubre de 2026) y npm.
 
 ```bash
 git clone https://github.com/Chamba-Lab/rakim-bot.git
@@ -81,7 +81,7 @@ Al conectar verás `Rakim conectado como <nombre>`. Si falta o está mal una var
 
 El bot es **un único proceso de Node.js que mantiene una conexión permanente con Discord**. Por eso necesita un host que lo mantenga encendido (un VPS, un contenedor o una plataforma de apps); un servicio _serverless_ no sirve. El proveedor todavía no está elegido (ver [`docs/decisions.md`](./docs/decisions.md)); estos pasos valen para cualquiera:
 
-1. **Compila**: `npm ci && npm run build`. Se ejecuta `node dist/index.js` (Node >= 22.12).
+1. **Compila**: `npm ci && npm run build`. Se ejecuta `node dist/index.js` (con una versión de Node parcheada, ver Instalación).
 2. **Configura las variables de entorno en el host** (las mismas de `.env.example`), sin subir `.env`. Es un secreto: usa el gestor de secretos de la plataforma o un archivo con permisos restringidos.
 3. **Da al estado un lugar persistente**: apunta `STATE_PATH` a un volumen o directorio que sobreviva a los reinicios. Ahí se guarda el aviso de bump pendiente.
 4. **Mantenlo vivo y reinicia si cae**: con el gestor de procesos del host. Ejemplo con systemd:

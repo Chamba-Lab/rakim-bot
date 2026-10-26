@@ -4,7 +4,7 @@ Gracias por sumar. Esta guía explica cómo proponer cambios sin fricción. Si a
 
 ## Preparar el entorno
 
-Requisitos: **Node.js >= 22.12** y npm.
+Requisitos: **Node.js 22.23.4, 24.22.1, 26.12.1 o posterior de su línea** (las versiones con el parche de seguridad de octubre de 2026) y npm.
 
 ```bash
 git clone https://github.com/Chamba-Lab/rakim-bot.git

@@ -21,6 +21,11 @@ Registro corto de las decisiones que condicionan el proyecto y el porqué. Solo 
 - **Todos los textos del bot en `src/messages.ts`.** Ajustar el tono o la redacción no debe exigir tocar la lógica ni buscar cadenas repartidas. Los IDs y el token, en cambio, son del despliegue y vienen del entorno, no de un archivo del repo.
 - **Los errores de un evento no tumban el proceso.** `registerEvents` envuelve cada evento en un `try/catch` que registra el fallo. Los servicios dejan subir el error en vez de tragarlo, para que haya un solo lugar donde se registra.
 
+## Entorno
+
+- **Node.js: solo versiones con el parche de octubre de 2026.** El 21 de octubre de 2026 Node publicó 22.23.4, 24.22.1 y 26.12.1, que corrigen 10 CVE; el más grave es un fallo en el decodificador Brotli de `node:zlib` (CVE-2026-111497) que permite ejecución remota de código. `engines` exige esas versiones o posteriores (`^22.23.4 || ^24.22.1 || >=26.12.1`), así que una instalación con 24.22.0, por ejemplo, avisa. Rakim no descomprime datos de terceros con `zlib`, pero el `fetch` integrado sí decodifica Brotli, y el fallo vive en Node, no en `discord.js`: se actualiza el runtime, no una dependencia. Una versión nueva de seguridad sube el mínimo en `package.json`, `README.md`, `AGENTS.md`, `CONTRIBUTING.md` y `PROJECT.yaml` en el mismo PR.
+- **Líneas de Node soportadas** (calendario oficial de nodejs/Release, consultado el 26 oct 2026): 22 en mantenimiento hasta el 30 abr 2027; 24 en mantenimiento desde el 20 oct 2026 hasta el 30 abr 2028; 26 pasa a LTS el 28 oct 2026 y llega hasta el 30 abr 2029.
+
 ## Estado y datos
 
 - **El estado vive en un archivo JSON, no en SQLite.** El único dato que debe sobrevivir a un reinicio es el momento del próximo aviso de bump. Un archivo evita una dependencia nativa y alcanza para un solo proceso. Se reemplaza por SQLite cuando haya más estado (por ejemplo, para deduplicar saludos entre reinicios o guardar historial); `StateStore` es el único punto que habría que tocar.
