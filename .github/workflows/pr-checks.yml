@@ -1,0 +1,94 @@
+name: PR Checks
+
+# Lint, tipos, pruebas, build y construcción de la imagen corren al abrir el PR o al
+# subir commits. El título se valida en pr-title.yml, que además escucha las
+# ediciones: así editar la descripción o el título no relanza todo.
+
+on:
+    pull_request:
+        branches:
+            - master
+        types: [opened, synchronize, reopened]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: pr-checks-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    validate:
+        name: Lint, Test & Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            # Node 24 es la línea que corre en producción (ver Dockerfile).
+            - name: Setup Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: "24"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Typecheck
+              run: npm run typecheck
+
+            - name: Test
+              run: npm run test
+
+            - name: Build
+              run: npm run build
+
+    # Comprueba que la imagen que se desplegará se construye; no la publica.
+    docker:
+        name: Docker build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Build image
+              run: docker build --pull --tag rakim-bot:ci .
+
+    # Solo avisa: no es un check obligatorio y nunca falla, porque a veces hay
+    # alertas sin parche upstream que no deben frenar un PR.
+    audit:
+        name: Dependency audit (advisory)
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Setup Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: "24"
+
+            # npm audit lee package-lock.json; no hace falta instalar dependencias.
+            - name: npm audit (high y critical)
+              run: |
+                  if npm audit --audit-level=high > audit.txt 2>&1; then
+                      echo "✅ npm audit: sin vulnerabilidades altas ni críticas." >> "$GITHUB_STEP_SUMMARY"
+                  else
+                      echo "::warning title=npm audit::Hay dependencias con vulnerabilidades altas o críticas. El detalle está en el resumen de este job."
+                      {
+                          echo "## ⚠️ npm audit"
+                          echo
+                          echo '```'
+                          cat audit.txt
+                          echo '```'
+                      } >> "$GITHUB_STEP_SUMMARY"
+                  fi
