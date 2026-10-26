@@ -50,5 +50,5 @@ El texto final se define con el equipo antes de ponerlo en producción.
 
 1. **Hecho**: estructura del repo, documentación y las tres funciones de la v0 con pruebas.
 2. **Siguiente**: probar contra un servidor de pruebas, verificar los puntos de arriba y cerrar el texto de bienvenida con el equipo.
-3. **Después**: elegir hosting y definir el CI/CD del bot (ver `docs/decisions.md`), y desplegar.
+3. **Después**: crear el Droplet de DigitalOcean y hacer el primer despliegue (ver `docs/deployment.md`). El hosting, la imagen Docker y el CI/CD ya están definidos y escritos.
 4. **Horizonte**: lo que pida la comunidad; cada función nueva se evalúa contra el principio de "quitar fricción, no sumar ruido".

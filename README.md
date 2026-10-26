@@ -79,32 +79,15 @@ Al conectar verás `Rakim conectado como <nombre>`. Si falta o está mal una var
 
 ## Despliegue
 
-El bot es **un único proceso de Node.js que mantiene una conexión permanente con Discord**. Por eso necesita un host que lo mantenga encendido (un VPS, un contenedor o una plataforma de apps); un servicio _serverless_ no sirve. El proveedor todavía no está elegido (ver [`docs/decisions.md`](./docs/decisions.md)); estos pasos valen para cualquiera:
+Rakim es **un único proceso de Node.js que mantiene una conexión permanente con Discord**, así que necesita un host siempre encendido (un servicio _serverless_ no sirve). Corre en un **Droplet de DigitalOcean de US$4 al mes (US$48 al año)** dentro de un contenedor Docker, y cada fusión en `master` lo actualiza sola con GitHub Actions:
 
-1. **Compila**: `npm ci && npm run build`. Se ejecuta `node dist/index.js` (con una versión de Node parcheada, ver Instalación).
-2. **Configura las variables de entorno en el host** (las mismas de `.env.example`), sin subir `.env`. Es un secreto: usa el gestor de secretos de la plataforma o un archivo con permisos restringidos.
-3. **Da al estado un lugar persistente**: apunta `STATE_PATH` a un volumen o directorio que sobreviva a los reinicios. Ahí se guarda el aviso de bump pendiente.
-4. **Mantenlo vivo y reinicia si cae**: con el gestor de procesos del host. Ejemplo con systemd:
+1. **Validar**: lint, tipos, pruebas y build.
+2. **Construir** la imagen (`Dockerfile`, Node 24 parcheado) y **enviarla por SSH** al servidor, sin registro de imágenes de por medio.
+3. **Reiniciar** el contenedor con `deploy/compose.yml` y comprobar que queda corriendo.
 
-    ```ini
-    [Unit]
-    Description=Rakim Bot
-    After=network-online.target
+El token y los IDs viven solo en `/opt/rakim-bot/.env` del servidor; el estado, en un volumen de Docker. La guía paso a paso (crear el Droplet, preparar el servidor, configurar GitHub, primer despliegue y operación) está en [`docs/deployment.md`](./docs/deployment.md).
 
-    [Service]
-    User=rakim
-    WorkingDirectory=/opt/rakim-bot
-    EnvironmentFile=/etc/rakim-bot.env
-    ExecStart=/usr/bin/node dist/index.js
-    Restart=always
-
-    [Install]
-    WantedBy=multi-user.target
-    ```
-
-5. **Una sola instancia a la vez.** Dos procesos con el mismo token saludarían y registrarían todo por duplicado.
-6. **Actualizar**: trae los cambios, `npm ci && npm run build` y reinicia el servicio. Un reinicio es seguro: el aviso de bump pendiente se retoma.
-7. **Al activar el bot en producción**, desactiva el mensaje automático de llegada de Discord para que no se duplique con el saludo de Rakim.
+Reglas que valen para cualquier host: **una sola instancia a la vez** (dos procesos con el mismo token saludarían y registrarían todo por duplicado), y al activar el bot en producción, desactiva el mensaje automático de llegada de Discord para que no se duplique con el saludo de Rakim.
 
 ## Estructura
 
@@ -127,5 +110,6 @@ src/
 - [docs/architecture.md](./docs/architecture.md): cómo funciona, intents y permisos
 - [docs/decisions.md](./docs/decisions.md): decisiones clave
 - [docs/runbook.md](./docs/runbook.md): crear el bot, configurarlo y diagnosticarlo
+- [docs/deployment.md](./docs/deployment.md): desplegar en DigitalOcean y operar el servidor
 
 El repositorio es privado y aún no tiene licencia definida.

@@ -13,13 +13,30 @@ Registro corto de las decisiones que condicionan el proyecto y el porqué. Solo 
 ## Stack
 
 - **TypeScript con `discord.js`.** Es el stack del resto de la organización (Node y TypeScript) y `discord.js` es la biblioteca más usada. No es oficial: Discord no mantiene SDKs. Python con `discord.py` también servía, pero partía el tooling en dos.
-- **El CI/CD del bot es propio, no el del sitio.** El sitio es una web estática que se compila y se publica en GitHub Pages; el bot es un proceso permanente que se despliega en un servidor. Los dos comparten convenciones (Conventional Commits, PR a `master`, lint y tests), no el pipeline. Pendiente de definir junto con el hosting.
-- **Hosting sin decidir.** Se evalúa al final. Restricción: el bot necesita una conexión permanente con Discord, así que un servicio _serverless_ (como Vercel) no encaja. Candidatos: un VPS (Hetzner, DigitalOcean), Railway, Fly.io, Oracle Always Free. Criterio principal: costo bajo.
+- **El CI/CD del bot es propio, no el del sitio.** El sitio es una web estática que se compila y se publica en GitHub Pages; el bot es un proceso permanente que se despliega en un servidor. Los dos comparten convenciones (Conventional Commits, PR a `master`, lint y tests, acciones fijadas por SHA), no el pipeline.
 - **Zod valida la configuración.** Un error de configuración se descubre al arrancar, con todos los problemas listados, no cuando un evento llega a un canal que no existe.
 - **Sin comandos slash en la v0.** El bot solo reacciona a eventos, así que no necesita registrar comandos ni el intent de interacciones.
 - **El código se organiza por evento de Discord (`src/events/`).** Es la convención de la guía de `discord.js` y encaja con un bot que solo reacciona. Una organización por función habría obligado a que dos funciones escucharan el mismo evento (`guildMemberAdd` lo usan el log y el saludo; `clientReady`, el log y el bump). Ahora cada evento es un archivo corto que filtra el servidor y llama a un servicio; la lógica con reglas vive en `lib/`, sin Discord, para probarla sola.
 - **Todos los textos del bot en `src/messages.ts`.** Ajustar el tono o la redacción no debe exigir tocar la lógica ni buscar cadenas repartidas. Los IDs y el token, en cambio, son del despliegue y vienen del entorno, no de un archivo del repo.
 - **Los errores de un evento no tumban el proceso.** `registerEvents` envuelve cada evento en un `try/catch` que registra el fallo. Los servicios dejan subir el error en vez de tragarlo, para que haya un solo lugar donde se registra.
+
+## Hosting y CI/CD
+
+- **Host: un Droplet de DigitalOcean de US$4/mes (US$48 al año).** Criterios: costo anual bajo y una marca que el equipo reconoce. El bot necesita una conexión permanente con Discord, así que se descartó todo lo _serverless_ o que se duerme. Evaluado el 26 oct 2026 con los precios de las páginas oficiales (varios cambian con frecuencia: confirmarlos al contratar):
+    - **Supabase** (funciones de 150 a 400 s; los proyectos gratis se pausan) y **Cloudflare Workers** (sin conexión de gateway fiable): no sirven. Cloudflare Containers cobra por uso (~US$9.5/mes estimados) y su `sleepAfter` desconecta el bot.
+    - **Render** (~US$7/mes el worker, sin plan gratis para workers) y **Railway** (US$5/mes): funcionan, cuestan más o igual.
+    - **Fly.io** (~US$28/año): el más barato de los gestionados, descartado por falta de confianza en la marca.
+    - **Hostinger** (US$6.49 el primer plazo de 24 meses y renueva a ~US$11.99): más caro y con contrato largo.
+    - **Google Cloud e2-micro «gratis»**: la IPv4 externa (US$0.005/h, ~US$44 al año, según fuentes secundarias) lo iguala a DigitalOcean con una VM más débil.
+    - **Oracle Always Free**: reclama las VM con menos del 20 % de uso, justo el caso de un bot liviano.
+    - **Autohostear**: viable técnicamente (el bot solo abre conexiones de salida) pero se descartó por disponibilidad y por atar el bot a la conexión de una persona.
+- **Droplet y no App Platform.** App Platform (~US$5/mes) simplificaba el despliegue, pero no pude confirmar si ofrece disco persistente y cuesta más que el Droplet. El estado del bot cabe en un volumen de Docker.
+- **512 MiB con swap y Docker.** El bot ocupa ~100–130 MB; el contenedor se limita a 256 MB y el servidor lleva 1 GB de swap. Si aparecen reinicios por memoria, se amplía el Droplet a US$6 (1 GiB) sin reconstruir nada.
+- **La imagen viaja por SSH (`docker save | docker load`), sin registro de imágenes.** Un registro (GitHub Container Registry o DigitalOcean) obligaría a guardar credenciales en el servidor o a usar un token con permisos de lectura; para una imagen de un solo servidor, enviarla directamente es más simple y no suma superficie de ataque. Si algún día hay varios servidores, se cambia por un registro.
+- **Llave de despliegue dedicada con la huella del servidor fijada.** `DEPLOY_KNOWN_HOSTS` se verifica contra la consola web del Droplet, y `StrictHostKeyChecking yes` hace fallar el despliegue si la huella cambia, en vez de confiar a ciegas. El usuario `deploy` pertenece al grupo `docker` (equivale a root en el servidor): por eso solo entra con llave y sin `sudo`.
+- **Node 24 en el contenedor.** Es la línea con soporte hasta abril de 2028. `docker build --pull` en cada despliegue trae el último parche de la imagen base, y `engine-strict` en `.npmrc` hace fallar `npm ci` si la imagen trae una versión sin el parche de octubre de 2026.
+- **Un cambio solo de documentación no despliega.** Evita reiniciar el bot sin motivo (`paths-ignore` en `deploy.yml`).
+- **Sin alertas ni entorno de pruebas desplegado, por ahora.** `restart: unless-stopped` reinicia ante caídas y un despliegue fallido sale en rojo en Actions. Se suma monitoreo cuando haya un motivo.
 
 ## Entorno
 
@@ -42,6 +59,7 @@ Registro corto de las decisiones que condicionan el proyecto y el porqué. Solo 
 
 ## Pendiente
 
-- Elegir hosting y definir el CI/CD.
+- Crear el Droplet y el primer despliegue (ver `deployment.md`); el script del servidor y el flujo de GitHub Actions están escritos pero sin probar contra un servidor real.
+- Proteger `master` con las reglas de `deployment.md` (depende del plan de la organización).
 - Licencia del repositorio (hoy privado y sin licencia).
 - Texto final del mensaje de bienvenida.
