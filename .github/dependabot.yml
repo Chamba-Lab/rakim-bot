@@ -12,6 +12,10 @@ updates:
       commit-message:
           prefix: chore
           include: scope
+      # Espera 7 días tras una publicación antes de proponerla: la mayoría de los paquetes
+      # maliciosos se detectan y retiran en ese plazo. Las alertas de seguridad no esperan.
+      cooldown:
+          default-days: 7
       # Parches y menores juntos en un solo PR; las mayores van por separado.
       groups:
           python-minor-patch:
@@ -25,6 +29,10 @@ updates:
       commit-message:
           prefix: ci
           include: scope
+      # Espera 7 días tras una publicación antes de proponerla: la mayoría de los paquetes
+      # maliciosos se detectan y retiran en ese plazo. Las alertas de seguridad no esperan.
+      cooldown:
+          default-days: 7
       groups:
           github-actions:
               patterns: ["*"]
@@ -39,3 +47,7 @@ updates:
       commit-message:
           prefix: chore
           include: scope
+      # Espera 7 días tras una publicación antes de proponerla: la mayoría de los paquetes
+      # maliciosos se detectan y retiran en ese plazo. Las alertas de seguridad no esperan.
+      cooldown:
+          default-days: 7
