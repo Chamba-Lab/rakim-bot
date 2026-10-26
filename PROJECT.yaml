@@ -1,0 +1,7 @@
+name: Rakim Bot
+stack:
+    language: TypeScript
+    library: discord.js 14
+    runtime: Node.js >=22.12
+    validation: zod
+    tests: Vitest
