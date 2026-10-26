@@ -1,0 +1,35 @@
+# Cómo corre Rakim en el servidor. El CD copia este archivo a /opt/rakim-bot/compose.yml
+# y carga la imagen `rakim-bot:latest` recién construida. El .env con el token y los IDs
+# vive solo en el servidor (nunca en el repo).
+services:
+    rakim:
+        image: rakim-bot:latest
+        container_name: rakim-bot
+        restart: unless-stopped
+        env_file: .env
+        environment:
+            # El estado vive en el volumen, aunque el .env diga otra cosa.
+            STATE_PATH: /app/data/state.json
+            # Mantiene la memoria de Node por debajo del límite del contenedor.
+            NODE_OPTIONS: --max-old-space-size=192
+        volumes:
+            - rakim-data:/app/data
+        # Endurecimiento: sistema de archivos de solo lectura (salvo el volumen y /tmp),
+        # sin capacidades de Linux extra ni escalada de privilegios.
+        read_only: true
+        tmpfs:
+            - /tmp
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        # El Droplet de US$4 tiene 512 MiB: el contenedor no debe poder acapararlos.
+        mem_limit: 256m
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+                max-file: "3"
+
+volumes:
+    rakim-data:
