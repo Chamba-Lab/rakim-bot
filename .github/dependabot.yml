@@ -1,0 +1,41 @@
+# Actualizaciones automáticas: Dependabot abre PRs que una persona revisa y fusiona.
+# Los prefijos dejan títulos en Conventional Commits (chore(deps): …, ci(deps): …).
+version: 2
+updates:
+    - package-ecosystem: npm
+      directory: /
+      schedule:
+          interval: weekly
+          day: monday
+          timezone: America/Lima
+      open-pull-requests-limit: 5
+      commit-message:
+          prefix: chore
+          include: scope
+      # Parches y menores juntos en un solo PR; las mayores van por separado.
+      groups:
+          npm-minor-patch:
+              update-types: [minor, patch]
+
+    - package-ecosystem: github-actions
+      directory: /
+      schedule:
+          interval: monthly
+          timezone: America/Lima
+      commit-message:
+          prefix: ci
+          include: scope
+      groups:
+          github-actions:
+              patterns: ["*"]
+
+    # Imagen base de Node. Los parches de seguridad de Node llegan con la reconstrucción
+    # de cada despliegue (`--pull`); esto avisa cuando cambia la versión mayor.
+    - package-ecosystem: docker
+      directory: /
+      schedule:
+          interval: monthly
+          timezone: America/Lima
+      commit-message:
+          prefix: chore
+          include: scope
