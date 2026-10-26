@@ -1,0 +1,35 @@
+name: PR title
+
+# Solo el título: escucha también `edited` (cambios de título o descripción) sin
+# relanzar lint, tests ni build. El job conserva su nombre porque es un check
+# obligatorio de la protección de master.
+on:
+    pull_request:
+        branches:
+            - master
+        types: [opened, synchronize, reopened, edited]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: pr-title-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    pr-title:
+        name: PR title (Conventional Commits)
+        runs-on: ubuntu-latest
+        steps:
+            # El título del PR se convierte en el mensaje del commit al hacer squash,
+            # por eso debe seguir Conventional Commits.
+            - name: Validate title
+              env:
+                  TITLE: ${{ github.event.pull_request.title }}
+              run: |
+                  pattern='^(feat|fix|docs|perf|refactor|chore|test|style|build|ci|revert)(\([a-z0-9._/-]+\))?!?: .+'
+                  if ! printf '%s' "$TITLE" | grep -Eq "$pattern"; then
+                      echo "::error::El título del PR debe seguir Conventional Commits, por ejemplo: 'feat: greet new members'."
+                      echo "Título actual: $TITLE"
+                      exit 1
+                  fi

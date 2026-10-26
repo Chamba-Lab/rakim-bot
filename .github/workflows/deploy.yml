@@ -1,0 +1,104 @@
+name: Deploy
+
+# Al fusionar en master: valida, construye la imagen y la despliega en el Droplet de
+# DigitalOcean. La imagen viaja por SSH (`docker save | ssh docker load`), así que no
+# hace falta un registro de imágenes ni guardar credenciales de registro en el servidor.
+# Configuración necesaria en GitHub (Settings > Secrets and variables > Actions):
+#   variables: DEPLOY_HOST, DEPLOY_USER
+#   secretos:  DEPLOY_SSH_KEY (llave privada del CD), DEPLOY_KNOWN_HOSTS (huella del servidor)
+# El paso a paso está en docs/deployment.md.
+
+on:
+    push:
+        branches:
+            - master
+        # Un cambio solo de documentación no reinicia el bot.
+        paths-ignore:
+            - "**/*.md"
+            - "docs/**"
+            - ".github/pull_request_template.md"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# Un despliegue a la vez, sin cancelar el que esté en curso: cortarlo a medias podría
+# dejar el contenedor sin actualizar.
+concurrency:
+    group: production
+    cancel-in-progress: false
+
+jobs:
+    validate:
+        name: Validate
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Install uv
+              run: python3 -m pip install uv==0.11.6
+
+            - name: Install dependencies
+              run: uv sync --frozen
+
+            - name: Lint and test
+              run: |
+                  uv run ruff check .
+                  uv run ruff format --check .
+                  uv run pytest
+
+    deploy:
+        name: Deploy to DigitalOcean
+        needs: validate
+        runs-on: ubuntu-latest
+        environment: production
+        env:
+            DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+            DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+            APP_DIR: /opt/rakim-bot
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            # `--pull` trae la base más reciente de Python 3.13, con los últimos parches de seguridad.
+            - name: Build image
+              run: docker build --pull --tag rakim-bot:latest .
+
+            # La huella del servidor va fijada: si cambia, la conexión falla en vez de confiar a ciegas.
+            - name: Configure SSH
+              env:
+                  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+                  DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+              run: |
+                  install -m 700 -d ~/.ssh
+                  printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+                  chmod 600 ~/.ssh/deploy_key
+                  printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+                  cat > ~/.ssh/config <<EOF
+                  Host rakim-server
+                      HostName $DEPLOY_HOST
+                      User $DEPLOY_USER
+                      IdentityFile ~/.ssh/deploy_key
+                      IdentitiesOnly yes
+                      StrictHostKeyChecking yes
+                  EOF
+
+            - name: Upload compose file
+              run: scp deploy/compose.yml "rakim-server:$APP_DIR/compose.yml"
+
+            - name: Load image and restart
+              run: |
+                  docker save rakim-bot:latest | gzip | ssh rakim-server \
+                      "gunzip | docker load && cd $APP_DIR && docker compose up -d --remove-orphans && docker image prune -f"
+
+            # Si el bot no queda corriendo (por ejemplo, un .env incompleto), el despliegue falla en rojo.
+            - name: Verify
+              run: |
+                  sleep 20
+                  ssh rakim-server "cd $APP_DIR && docker compose ps && docker compose logs --tail 20 rakim"
+                  ssh rakim-server "cd $APP_DIR && docker compose ps --status running --quiet rakim | grep -q ."

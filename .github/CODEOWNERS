@@ -1,0 +1,3 @@
+# Revisión por defecto: se solicita al equipo Admins como revisor en cada PR.
+# La aprobación obligatoria la define la protección de master, no este archivo.
+* @Chamba-Lab/admins
