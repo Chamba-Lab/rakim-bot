@@ -1,0 +1,31 @@
+[project]
+name = "rakim-bot"
+version = "0.0.0"
+description = "Rakim Bot: Discord bot of the Chamba Lab community"
+requires-python = ">=3.13"
+dependencies = [
+    "discord.py>=2.7,<3",
+    "pydantic-settings>=2.6,<3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+# Es una aplicación, no una librería: no se empaqueta ni se instala a sí misma.
+package = false
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+# Las líneas largas de comentarios no se parten solas; el formateador cuida el código.
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,11 +1,9 @@
-# build output
-dist/
-
-# dependencies
-node_modules/
-
-# logs
-npm-debug.log*
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
 
 # environment variables
 .env
