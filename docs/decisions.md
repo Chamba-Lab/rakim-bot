@@ -12,6 +12,8 @@ Solo las que un contribuidor o agente podría deshacer sin saberlo. Si cambias u
 
 ## Stack
 
+- **Python 3.14, no 3.13.** El 25 oct 2026 salieron las versiones de seguridad 3.14.10, 3.13.18 y 3.12.16 (tarfile, zipfile, ssl, Expat y desconfianza de una CA intermedia, entre otros CVE). Rakim no extrae archivos ni procesa XML, así que la exposición es baja, pero se parchea igual. 3.13 ya solo recibe correcciones de seguridad (sin instaladores) y 3.14 tiene soporte completo, así que un proyecto nuevo arranca en 3.14. Se probó con las dependencias: todas tienen ruedas para 3.14 y los 31 tests y `mypy --strict` pasan. La imagen de producción (`python:3.14-slim`) trae 3.14.10 y el Dockerfile falla si trae menos (ver `deployment.md`). `discord.py` no declara oficialmente 3.13 ni 3.14, pero funciona.
+- **Buenas prácticas aplicadas (2026):** secretos como `SecretStr` (no salen en logs ni en `repr`); `uv.lock` con hashes, instalado con `--frozen`; `pip-audit` de las dependencias en cada PR; `ruff` con reglas de seguridad (bandit) y `mypy --strict`; permisos y menciones mínimos; contenedor sin root, de solo lectura y sin capacidades extra; acciones de GitHub fijadas por SHA con permisos de solo lectura.
 - **Python con `discord.py`** (cambio del 26 oct 2026; la primera versión estaba en TypeScript). El bot rehecho tiene ~520 líneas frente a ~910, menos archivos de configuración y una imagen Docker de una sola etapa. El costo del cambio fue bajo porque el bot aún no se había fusionado. Aunque `home` usa Node, el bot es otro proyecto con otro ciclo de vida.
 - **Estructura por evento** (`rakim/events/`), con la extensión `setup(bot)` de `discord.py`. Sin capas intermedias: un evento llama a la función que necesita.
 - **Todos los textos en `messages.py`.** Ajustar el tono no debe exigir tocar la lógica.
@@ -23,7 +25,7 @@ Solo las que un contribuidor o agente podría deshacer sin saberlo. Si cambias u
 
 - **Cuatro intents, dos privilegiados** (`architecture.md`). No se pide `guild_invites`: Rakim lee las invitaciones por la API en cada entrada.
 - **`message_content`**: sin él, Discord entrega vacíos el texto y los embeds de otros bots y no se distingue un bump exitoso del aviso de «espera».
-- **El patrón de bump es configurable** (`BUMP_SUCCESS_PATTERN`): el texto exacto de Disboard no está documentado y depende de su versión e idioma.
+- **El patrón de bump es configurable** (`BUMP_SUCCESS_PATTERN`, por defecto `bump done`). Verificado el 26 oct 2026 con una captura real: Disboard responde al `/bump` con un embed titulado «DISBOARD: The Public Server List» cuya descripción empieza con «Bump done! 👍». Es configurable porque Disboard puede cambiar el texto o responder en otro idioma.
 - **Permisos mínimos `19488`**: Ver canales, Enviar mensajes, Insertar enlaces y Gestionar servidor. Nada de Administrador, Leer el historial ni Mencionar a todos.
 - **El bot opera solo en `GUILD_ID`** e ignora cualquier otro servidor.
 
@@ -50,5 +52,5 @@ Solo las que un contribuidor o agente podría deshacer sin saberlo. Si cambias u
 
 - Crear el Droplet y hacer el primer despliegue (`deployment.md`). El script del servidor y los workflows están escritos pero sin probar contra un servidor real.
 - Proteger `master` (`deployment.md`, sección 8); depende del plan de la organización.
-- Verificar en un servidor de pruebas: el texto de Disboard, el comportamiento de `pending` y los permisos.
+- Verificar en un servidor de pruebas: el comportamiento de `pending` y los permisos.
 - Texto final del mensaje de bienvenida y licencia del repositorio.

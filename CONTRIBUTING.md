@@ -4,7 +4,7 @@ Gracias por sumar. Si algo no queda claro, pregunta en [Discord](https://chambal
 
 ## Preparar el entorno
 
-Necesitas [uv](https://docs.astral.sh/uv/) (instala Python 3.13 y las dependencias).
+Necesitas [uv](https://docs.astral.sh/uv/) (instala Python 3.14 y las dependencias).
 
 ```bash
 git clone https://github.com/Chamba-Lab/rakim-bot.git
@@ -22,6 +22,7 @@ Para probar contra Discord necesitas un bot y un servidor de pruebas propios, no
 3. **Valida en local** antes de abrir el PR:
     ```bash
     uv run ruff check . && uv run ruff format --check .
+    uv run mypy
     uv run pytest
     ```
 4. **Abre un Pull Request hacia `master`** y completa la plantilla; marca solo lo que verificaste. Una persona del equipo revisa.

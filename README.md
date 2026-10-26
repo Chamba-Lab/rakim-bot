@@ -12,7 +12,7 @@ Cómo funciona cada una, los intents y los permisos: [`docs/architecture.md`](./
 
 ## Instalación
 
-Necesitas [uv](https://docs.astral.sh/uv/), que instala Python 3.13 y las dependencias solo.
+Necesitas [uv](https://docs.astral.sh/uv/), que instala Python 3.14 y las dependencias solo.
 
 ```bash
 git clone https://github.com/Chamba-Lab/rakim-bot.git
@@ -41,6 +41,7 @@ El token y los IDs viven en `.env` (que no se sube al repo; solo `.env.example`)
 | :----------------------------------------------- | :---------------------------- |
 | `uv run python -m rakim`                         | Arranca el bot                |
 | `uv run pytest`                                  | Ejecuta las pruebas           |
+| `uv run mypy`                                     | Revisa los tipos              |
 | `uv run ruff check . && uv run ruff format --check .` | Lint y formato           |
 | `uv run ruff check --fix . && uv run ruff format .`   | Corrige lo que se pueda  |
 

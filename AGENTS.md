@@ -16,7 +16,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 
 ## 2. Stack
 
-**Python 3.13** con [`discord.py`](https://github.com/Rapptz/discord.py) 2.x (biblioteca comunitaria: Discord no mantiene SDKs oficiales), `pydantic-settings` para la configuración, `pytest` y `ruff`. Dependencias y entorno con [uv](https://docs.astral.sh/uv/) (`uv.lock` se sube). Hosting: un Droplet de DigitalOcean con Docker. CI/CD: GitHub Actions.
+**Python 3.14** (versión con soporte completo; la imagen de producción exige 3.14.10 o posterior, con los parches de seguridad de octubre de 2026) con [`discord.py`](https://github.com/Rapptz/discord.py) 2.x (biblioteca comunitaria: Discord no mantiene SDKs oficiales), `pydantic-settings` para la configuración, `pytest`, `ruff` (con reglas de seguridad) y `mypy --strict`. Dependencias y entorno con [uv](https://docs.astral.sh/uv/) (`uv.lock` se sube). Hosting: un Droplet de DigitalOcean con Docker. CI/CD: GitHub Actions.
 
 ## 3. Estructura
 
@@ -45,7 +45,7 @@ Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas 
 
 1. **`master` está protegida: nunca se hace push directo**, tampoco un agente. Todo va en una rama (`feat/…`, `fix/…`, `docs/…`, `chore/…`) desde `master` actualizada y entra por Pull Request; el merge lo hace una persona del equipo. **Cada fusión en `master` despliega.**
 2. **Conventional Commits**, en inglés e imperativo (`feat:`, `fix:`, `docs:`, `chore:`, `ci:`…), commits atómicos. El título del PR también. La descripción rellena la plantilla de `.github/pull_request_template.md`: se marca solo lo que se verificó.
-3. **Antes de subir**: `uv run ruff check .`, `uv run ruff format --check .` y `uv run pytest` deben pasar.
+3. **Antes de subir**: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy` y `uv run pytest` deben pasar.
 4. **Documentación viva**: un cambio de comportamiento actualiza este archivo o `docs/`. Una decisión que alguien podría deshacer sin saberlo va en [`docs/decisions.md`](./docs/decisions.md).
 5. **Sin atribución de IA**: los commits y PRs no llevan líneas de co-autor ni "generated with".
 6. **Verificado en Discord**: un cambio que toca eventos o mensajes se prueba en un servidor de pruebas, no solo con tests. Si no se pudo, se dice en el PR.
