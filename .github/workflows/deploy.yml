@@ -3,8 +3,9 @@ name: Deploy
 # Al fusionar en master: valida, construye la imagen y la despliega en el Droplet de
 # DigitalOcean. La imagen viaja por SSH (`docker save | ssh docker load`), así que no
 # hace falta un registro de imágenes ni guardar credenciales de registro en el servidor.
+# DESHABILITADO POR DEFECTO: solo corre si la variable DEPLOY_ENABLED vale "true".
 # Configuración necesaria en GitHub (Settings > Secrets and variables > Actions):
-#   variables: DEPLOY_HOST, DEPLOY_USER
+#   variables: DEPLOY_ENABLED, DEPLOY_HOST, DEPLOY_USER
 #   secretos:  DEPLOY_SSH_KEY (llave privada del CD), DEPLOY_KNOWN_HOSTS (huella del servidor)
 # El paso a paso está en docs/deployment.md.
 
@@ -31,6 +32,10 @@ concurrency:
 jobs:
     validate:
         name: Validate
+        # Interruptor: mientras la variable DEPLOY_ENABLED no valga "true", este flujo no
+        # hace nada (ni al fusionar en master ni a mano). Se activa con:
+        #   gh variable set DEPLOY_ENABLED --body "true"
+        if: vars.DEPLOY_ENABLED == 'true'
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -38,21 +43,34 @@ jobs:
               with:
                   persist-credentials: false
 
+            - name: Setup Python
+              uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+              with:
+                  python-version: "3.14"
+
             - name: Install uv
-              run: python3 -m pip install uv==0.11.6
+              run: python -m pip install uv==0.13.5
 
             - name: Install dependencies
-              run: uv sync --frozen
+              env:
+                  UV_PYTHON_DOWNLOADS: never
+                  UV_PYTHON_PREFERENCE: only-system
+              run: |
+                  uv lock --check
+                  uv sync --frozen
 
-            - name: Lint and test
+            - name: Lint, types and tests
               run: |
                   uv run ruff check .
                   uv run ruff format --check .
+                  uv run mypy
                   uv run pytest
 
     deploy:
         name: Deploy to DigitalOcean
         needs: validate
+        # Misma condición que arriba, por si alguien quita `validate`: el despliegue nunca corre apagado.
+        if: vars.DEPLOY_ENABLED == 'true'
         runs-on: ubuntu-latest
         environment: production
         env:
