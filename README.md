@@ -33,6 +33,16 @@ docker run -d --name rakim --restart unless-stopped --env-file .env -e STATE_PAT
 
 Logs: `docker logs -f rakim`. Detener y borrar el contenedor: `docker rm -f rakim`. Una sola instancia por token: no lo dejes corriendo si el despliegue está activo.
 
+**Actualizar** tras cambiar el código (`git pull`): reconstruye la imagen y vuelve a crear el contenedor. El volumen `rakim-data` conserva el aviso de bump pendiente.
+
+```bash
+docker build -t rakim-bot .
+docker rm -f rakim
+docker run -d --name rakim --restart unless-stopped --env-file .env -e STATE_PATH=/data/state.json -v rakim-data:/data rakim-bot
+```
+
+Si solo cambias el `.env`, omite el `docker build`: el contenedor lee el `.env` al crearse.
+
 ## Crear el bot e invitarlo
 
 Para probar usa **un bot y un servidor de pruebas propios**, no los de la comunidad. Los pasos (portal de desarrolladores, intents, IDs, cómo probar cada función y qué hacer si algo falla) están en [`docs/setup.md`](./docs/setup.md). Lo esencial:
