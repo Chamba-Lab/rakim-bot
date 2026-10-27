@@ -22,6 +22,17 @@ cp .env.example .env     # completa el token y los IDs
 uv run python -m rakim
 ```
 
+### Con Docker
+
+Para dejarlo corriendo en segundo plano (con Docker abierto, desde la carpeta del repo y con el `.env` listo):
+
+```bash
+docker build -t rakim-bot .
+docker run -d --name rakim --restart unless-stopped --env-file .env -e STATE_PATH=/data/state.json -v rakim-data:/data rakim-bot
+```
+
+Logs: `docker logs -f rakim`. Detener y borrar el contenedor: `docker rm -f rakim`. Una sola instancia por token: no lo dejes corriendo si el despliegue está activo.
+
 ## Crear el bot e invitarlo
 
 Para probar usa **un bot y un servidor de pruebas propios**, no los de la comunidad. Los pasos (portal de desarrolladores, intents, IDs, cómo probar cada función y qué hacer si algo falla) están en [`docs/setup.md`](./docs/setup.md). Lo esencial:
