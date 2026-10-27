@@ -24,24 +24,23 @@ uv run python -m rakim
 
 ### Con Docker
 
-Para dejarlo corriendo en segundo plano (con Docker abierto, desde la carpeta del repo y con el `.env` listo):
+Para dejarlo corriendo en segundo plano usa el mismo `compose.yml` del servidor. Con Docker abierto y desde la carpeta del repo, mueve tu `.env` a `deploy/.env` (el compose lo busca junto a sí mismo; git lo ignora):
 
 ```bash
 docker build -t rakim-bot .
-docker run -d --name rakim --restart unless-stopped --env-file .env -e STATE_PATH=/data/state.json -v rakim-data:/data rakim-bot
+docker compose -f deploy/compose.yml up -d
 ```
 
-Logs: `docker logs -f rakim`. Detener y borrar el contenedor: `docker rm -f rakim`. Una sola instancia por token: no lo dejes corriendo si el despliegue está activo.
+Logs: `docker compose -f deploy/compose.yml logs -f rakim`. Detener: `docker compose -f deploy/compose.yml down` (el volumen se conserva). Una sola instancia por token: no lo dejes corriendo si el despliegue está activo.
 
-**Actualizar** tras cambiar el código (`git pull`): reconstruye la imagen y vuelve a crear el contenedor. El volumen `rakim-data` conserva el aviso de bump pendiente.
+**Actualizar** tras cambiar el código (`git pull`): reconstruye la imagen y repite el `up -d`, que recrea el contenedor. El volumen conserva el aviso de bump pendiente.
 
 ```bash
 docker build -t rakim-bot .
-docker rm -f rakim
-docker run -d --name rakim --restart unless-stopped --env-file .env -e STATE_PATH=/data/state.json -v rakim-data:/data rakim-bot
+docker compose -f deploy/compose.yml up -d
 ```
 
-Si solo cambias el `.env`, omite el `docker build`: el contenedor lee el `.env` al crearse.
+Si solo cambias `deploy/.env`, omite el `docker build`: `up -d` recrea el contenedor con los valores nuevos.
 
 ## Crear el bot e invitarlo
 
