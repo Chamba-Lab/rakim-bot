@@ -35,8 +35,9 @@ def welcome(user_id: int, s: Settings) -> str:
     )
 
 
-def bump_reminder(role_id: int | None, minutes: int) -> str:
+def bump_reminder(role_id: int | None, user_id: int | None, minutes: int) -> str:
     mention = f"<@&{role_id}> " if role_id else ""
+    mention += f"<@{user_id}> " if user_id else ""
     return f"{mention}Pasaron {minutes} minutos. Toca hacer `/bump`."
 
 

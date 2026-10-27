@@ -52,14 +52,15 @@ class RakimBot(commands.Bot):
 
     async def remind_bump(self) -> None:
         s = self.settings
-        # Solo se menciona el rol del bump, si existe (debe ser mencionable).
-        mentions = (
-            discord.AllowedMentions(roles=[discord.Object(s.bump_role_id)])
-            if s.bump_role_id
-            else discord.AllowedMentions.none()
+        # Solo se mencionan el rol y la persona del bump, si existen (el rol debe ser mencionable).
+        mentions = discord.AllowedMentions(
+            roles=[discord.Object(s.bump_role_id)] if s.bump_role_id else False,
+            users=[discord.Object(s.bump_user_id)] if s.bump_user_id else False,
         )
         await self.send(
             s.bump_channel_id,
-            content=messages.bump_reminder(s.bump_role_id, s.bump_cooldown_minutes),
+            content=messages.bump_reminder(
+                s.bump_role_id, s.bump_user_id, s.bump_cooldown_minutes
+            ),
             allowed_mentions=mentions,
         )

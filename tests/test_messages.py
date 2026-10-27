@@ -39,14 +39,22 @@ def test_welcome_uses_a_single_emoji():
 
 def test_bump_reminder_mentions_the_role_when_configured():
     assert (
-        messages.bump_reminder(123, 120)
+        messages.bump_reminder(123, None, 120)
         == "<@&123> Pasaron 120 minutos. Toca hacer `/bump`."
+    )
+
+
+def test_bump_reminder_mentions_a_person_when_configured():
+    assert (
+        messages.bump_reminder(None, 456, 120)
+        == "<@456> Pasaron 120 minutos. Toca hacer `/bump`."
     )
 
 
 def test_bump_reminder_works_without_a_role():
     assert (
-        messages.bump_reminder(None, 120) == "Pasaron 120 minutos. Toca hacer `/bump`."
+        messages.bump_reminder(None, None, 120)
+        == "Pasaron 120 minutos. Toca hacer `/bump`."
     )
 
 
