@@ -37,7 +37,7 @@ Se invita con `permissions=19488`:
 | Insertar enlaces   | Los embeds del log                                                                       |
 | Gestionar servidor | Leer las invitaciones y sus usos (no hay otra forma). Sensible: solo para el rol de Rakim |
 
-El canal de logs es privado: el rol de Rakim necesita acceso explícito. Si hay `BUMP_ROLE_ID`, ese rol debe ser mencionable (así no hace falta el permiso de mencionar todos los roles). No se pide «Leer el historial» porque el bot solo reacciona a eventos nuevos (a confirmar en un servidor de pruebas).
+El canal de logs es privado: el rol de Rakim necesita acceso explícito. Si hay `BUMP_ROLE_ID` (o `BUMP_USER_ID`, para mencionar a una persona), ese rol debe ser mencionable (así no hace falta el permiso de mencionar todos los roles). No se pide «Leer el historial» porque el bot solo reacciona a eventos nuevos (a confirmar en un servidor de pruebas).
 
 ## Bienvenida
 

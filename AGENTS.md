@@ -12,7 +12,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
     3. **Recordatorio de bump**: detecta el bump de Disboard y avisa a las 2 horas. **No ejecuta `/bump`**: un bot no puede invocar los comandos de otro, y hacerlo con una cuenta de usuario incumple los términos de Discord.
 - Fuera de alcance: moderación avanzada, niveles o karma, gamificación, integración con Chamba Board, mensajes directos de bienvenida (parecen invasivos).
 
-**Voz de Rakim**: breve, seca y algo gruñona, pero cálida. Español neutro, tuteo, sin jerga local ("Chamba", el nombre, es la única excepción), frases cortas y como máximo un emoji por mensaje. Sin promesas de empleo. Hacia afuera se dice "equipo". Todo texto que escribe el bot vive en `rakim/messages.py`.
+**Voz de Rakim**: directa y cálida, con expresividad (un ¡! cuando toca); a veces gruñona, no siempre. Español neutro, tuteo, sin jerga local ("Chamba", el nombre, es la única excepción), frases cortas y como máximo un emoji por mensaje. Sin promesas de empleo. Hacia afuera se dice "equipo". Todo texto que escribe el bot vive en `rakim/messages.py`.
 
 ## 2. Stack
 

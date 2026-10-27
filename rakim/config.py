@@ -22,13 +22,13 @@ class Settings(BaseSettings):
     welcome_channel_id: Snowflake
     intro_channel_id: Snowflake
     ask_feedback_channel_id: Snowflake
-    server_feedback_channel_id: Snowflake
     links_channel_id: Snowflake
 
-    # Canal privado de logs y canal del aviso de bump (con un rol a mencionar, opcional).
+    # Canal privado de logs y canal del aviso de bump (con un rol y/o una persona a mencionar, opcionales).
     log_channel_id: Snowflake
     bump_channel_id: Snowflake
     bump_role_id: Snowflake | None = None
+    bump_user_id: Snowflake | None = None
 
     # Disboard gestiona el bump; el patrón reconoce su confirmación de éxito.
     disboard_bot_id: Snowflake = 302050872383242240
