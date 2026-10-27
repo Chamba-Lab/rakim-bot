@@ -37,5 +37,5 @@ Para probar contra Discord necesitas un bot y un servidor de pruebas propios, no
 
 - **Pruebas** para la lógica con reglas. Los eventos de Discord se prueban a mano en un servidor de pruebas, y se dice en el PR.
 - **Documentación al día** en el mismo PR.
-- **Textos de Rakim** con su voz: breves, español neutro, tuteo, sin jerga local y un solo emoji como máximo.
+- **Textos de Rakim** con su voz: directos y cálidos, español neutro, tuteo, sin jerga local y un solo emoji como máximo.
 - **Sin secretos**: ni tokens ni IDs reales de producción en commits, issues o capturas.

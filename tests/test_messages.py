@@ -7,7 +7,6 @@ from rakim.invites import InviteInfo
 class FakeSettings:
     intro_channel_id = 111111111111111111
     ask_feedback_channel_id = 222222222222222222
-    server_feedback_channel_id = 333333333333333333
     links_channel_id = 444444444444444444
 
 
@@ -15,13 +14,12 @@ def invite(code="abc", uses=3, inviter_id=100000000000000001):
     return InviteInfo(code, uses, 0, inviter_id)
 
 
-def test_welcome_mentions_the_person_and_every_channel():
+def test_welcome_mentions_the_person_and_the_channels():
     text = messages.welcome(999999999999999999, FakeSettings())
     assert "<@999999999999999999>" in text
     for channel in (
         111111111111111111,
         222222222222222222,
-        333333333333333333,
         444444444444444444,
     ):
         assert f"<#{channel}>" in text

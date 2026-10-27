@@ -1,6 +1,7 @@
 """Todo lo que Rakim escribe en Discord, para ajustar el tono sin tocar la lógica.
 
-Voz de Rakim: breve, seca y cálida; español neutro, tuteo y un solo emoji como máximo.
+Voz de Rakim: directa, cálida y expresiva (un ¡! cuando toca); a veces gruñona, no siempre.
+Español neutro, tuteo y un solo emoji como máximo.
 """
 
 from datetime import datetime
@@ -17,21 +18,15 @@ RED = 0xED4245
 def welcome(user_id: int, s: Settings) -> str:
     """Borrador del mensaje de bienvenida (el texto final lo define el equipo)."""
     return (
-        f"Te damos la bienvenida a Chamba Lab, <@{user_id}>. Soy Rakim. Aquí nadie te "
-        "apura: es una comunidad tranquila para conectar, inspirarte y crecer en tecnología.\n"
+        f"¡Qué bueno tenerte en Chamba Lab, <@{user_id}>! Soy Rakim, la mascota de esta "
+        "comunidad tech chill para conectar, inspirarte y crecer.\n"
         "\n"
-        "Para empezar:\n"
-        f"- Cuéntanos de ti en <#{s.intro_channel_id}>: tu nombre, de dónde eres, en qué "
-        "trabajas o qué estudias, y tus hobbies e intereses. Lo que quieras compartir.\n"
+        f"- Preséntate en <#{s.intro_channel_id}>: quién eres, qué haces y qué te gusta.\n"
         "- ¿Quieres feedback de tu portafolio, GitHub, LinkedIn o CV? Pídelo en "
         f"<#{s.ask_feedback_channel_id}>.\n"
-        "- Este canal es donde conversamos día a día.\n"
-        "- Si tienes ideas para mejorar el servidor, déjalas en "
-        f"<#{s.server_feedback_channel_id}>.\n"
-        "- Las redes y la descripción completa del servidor están en "
-        f"<#{s.links_channel_id}>.\n"
+        f"- Nuestras redes y el blog están en <#{s.links_channel_id}>.\n"
         "\n"
-        "Pasa por aquí cuando quieras. El café corre por tu cuenta. ☕"
+        "Ponte a gusto. ☕"
     )
 
 

@@ -27,7 +27,7 @@ Activa el _Modo desarrollador_ en Discord (Ajustes > Avanzado) para copiar IDs c
 | `DISCORD_TOKEN`                                                                                 | Portal de desarrolladores > Bot                          |
 | `GUILD_ID`                                                                                      | Clic derecho sobre el servidor                           |
 | `WELCOME_CHANNEL_ID`                                                                            | Canal general                                            |
-| `INTRO_CHANNEL_ID`, `ASK_FEEDBACK_CHANNEL_ID`, `SERVER_FEEDBACK_CHANNEL_ID`, `LINKS_CHANNEL_ID` | Canales que menciona el saludo                           |
+| `INTRO_CHANNEL_ID`, `ASK_FEEDBACK_CHANNEL_ID`, `LINKS_CHANNEL_ID` | Canales que menciona el saludo                           |
 | `LOG_CHANNEL_ID`                                                                                | Canal privado de logs                                    |
 | `BUMP_CHANNEL_ID`, `BUMP_ROLE_ID` y `BUMP_USER_ID` (opcionales)                                 | Canal del aviso, y rol (debe ser mencionable) y/o persona a mencionar |
 | `INVITE_LABELS`                                                                                 | JSON `{"codigo":"nombre"}` para nombrar las invitaciones |

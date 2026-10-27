@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     welcome_channel_id: Snowflake
     intro_channel_id: Snowflake
     ask_feedback_channel_id: Snowflake
-    server_feedback_channel_id: Snowflake
     links_channel_id: Snowflake
 
     # Canal privado de logs y canal del aviso de bump (con un rol y/o una persona a mencionar, opcionales).
