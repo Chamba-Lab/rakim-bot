@@ -18,15 +18,16 @@ RED = 0xED4245
 def welcome(user_id: int, s: Settings) -> str:
     """Borrador del mensaje de bienvenida (el texto final lo define el equipo)."""
     return (
-        f"¡Qué bueno tenerte en Chamba Lab, <@{user_id}>! Soy Rakim, la mascota de esta "
-        "comunidad tech chill para conectar, inspirarte y crecer.\n"
+        f"¡Bienvenid@, <@{user_id}>! Soy Rakim, la mascota de esta comunidad: un espacio "
+        "chill para conectar, inspirarte y crecer en el mundo tech.\n"
         "\n"
-        f"- Preséntate en <#{s.intro_channel_id}>: quién eres, qué haces y qué te gusta.\n"
+        f"- Cuéntanos de ti en <#{s.intro_channel_id}>: tu nombre, de dónde eres, en qué "
+        "trabajas o qué estudias, y tus hobbies e intereses. Lo que quieras compartir.\n"
         "- ¿Quieres feedback de tu portafolio, GitHub, LinkedIn o CV? Pídelo en "
         f"<#{s.ask_feedback_channel_id}>.\n"
-        f"- Nuestras redes y el blog están en <#{s.links_channel_id}>.\n"
+        f"- Nuestras redes y el blog los encuentras en <#{s.links_channel_id}>.\n"
         "\n"
-        "Ponte a gusto. ☕"
+        "Sírvete un café y ponte a gusto. ☕"
     )
 
 
