@@ -1,7 +1,7 @@
 import discord
 
 from ..bot import RakimBot
-from ..welcome import greet
+from ..welcome import greet_in_order
 
 
 async def setup(bot: RakimBot) -> None:
@@ -15,4 +15,4 @@ async def setup(bot: RakimBot) -> None:
             and before.pending
             and not after.pending
         ):
-            await greet(bot, after)
+            await greet_in_order(bot, after)

@@ -18,7 +18,13 @@ VALID = {
 @pytest.fixture(autouse=True)
 def clean_env(monkeypatch):
     """Las pruebas no deben leer el entorno ni el .env de quien las ejecuta."""
-    for key in [*VALID, "BUMP_ROLE_ID", "INVITE_LABELS", "BUMP_SUCCESS_PATTERN"]:
+    for key in [
+        *VALID,
+        "BUMP_ROLE_ID",
+        "INVITE_LABELS",
+        "BUMP_SUCCESS_PATTERN",
+        "WELCOME_WAIT_SYSTEM_MESSAGE",
+    ]:
         monkeypatch.delenv(key, raising=False)
 
 
@@ -35,6 +41,12 @@ def test_applies_defaults(monkeypatch):
     assert s.bump_role_id is None
     assert s.invite_labels == {}
     assert s.state_path == "data/state.json"
+    assert s.welcome_wait_system_message is True
+
+
+def test_welcome_can_stop_waiting_for_the_system_message(monkeypatch):
+    s = settings(monkeypatch, WELCOME_WAIT_SYSTEM_MESSAGE="false")
+    assert s.welcome_wait_system_message is False
 
 
 def test_empty_variable_counts_as_undefined(monkeypatch):
