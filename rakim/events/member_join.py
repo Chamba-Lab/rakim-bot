@@ -6,7 +6,7 @@ import discord
 from .. import messages
 from ..bot import RakimBot
 from ..invites import read_invites, used_invites
-from ..welcome import greet
+from ..welcome import greet_in_order
 
 log = logging.getLogger("rakim")
 
@@ -22,7 +22,7 @@ async def setup(bot: RakimBot) -> None:
             return
         tasks = [log_join(bot, member)]
         if not member.pending:
-            tasks.append(greet(bot, member))
+            tasks.append(greet_in_order(bot, member))
 
         # Son independientes: si falla el log, el saludo sale igual.
         for result in await asyncio.gather(*tasks, return_exceptions=True):

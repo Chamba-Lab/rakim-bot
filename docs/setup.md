@@ -32,7 +32,7 @@ Activa el _Modo desarrollador_ en Discord (Ajustes > Avanzado) para copiar IDs c
 | `BUMP_CHANNEL_ID`, `BUMP_ROLE_ID` y `BUMP_USER_ID` (opcionales)                                 | Canal del aviso, y rol (debe ser mencionable) y/o persona a mencionar |
 | `INVITE_LABELS`                                                                                 | JSON `{"codigo":"nombre"}` para nombrar las invitaciones |
 
-`DISBOARD_BOT_ID`, `BUMP_SUCCESS_PATTERN`, `BUMP_COOLDOWN_MINUTES` y `STATE_PATH` tienen valores por defecto.
+`DISBOARD_BOT_ID`, `BUMP_SUCCESS_PATTERN`, `BUMP_COOLDOWN_MINUTES`, `WELCOME_WAIT_SYSTEM_MESSAGE` y `STATE_PATH` tienen valores por defecto.
 
 ## 4. Ejecutar y probar
 
@@ -45,7 +45,7 @@ Verás `Rakim conectado como <nombre>`. Si la configuración es inválida, termi
 | Función    | Cómo probarla                                                                                                                                                                                                 |
 | :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Log        | Entra y sal con una cuenta secundaria usando una invitación; debe aparecer un embed por evento, con la invitación identificada. Repite con dos invitaciones distintas.                                          |
-| Bienvenida | Entra con una cuenta secundaria y acepta la pantalla de reglas: el saludo debe salir al aceptarlas, no al entrar. Sin reglas obligatorias, sale al entrar.                                                        |
+| Bienvenida | Entra con una cuenta secundaria y acepta la pantalla de reglas: el saludo debe salir al aceptarlas, no al entrar. Sin reglas obligatorias, sale al entrar. El saludo debe salir después del mensaje nativo «ha entrado» (el canal de mensajes del sistema debe ser `WELCOME_CHANNEL_ID`); con `WELCOME_WAIT_SYSTEM_MESSAGE=false`, tras unos 5 s.                                                        |
 | Bump       | Ejecuta `/bump` con Disboard. Debe aparecer `Bump detectado; aviso programado`. Para una prueba rápida usa `BUMP_COOLDOWN_MINUTES=1` y reinicia el bot durante la espera: el aviso debe llegar igualmente.       |
 
 ## 5. Si algo falla

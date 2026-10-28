@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     ask_feedback_channel_id: Snowflake
     links_channel_id: Snowflake
 
+    # El saludo espera al mensaje nativo de entrada de Discord para no salir antes. Con
+    # false (mensajes nativos desactivados) se usa una pausa fija corta.
+    welcome_wait_system_message: bool = True
+
     # Canal privado de logs y canal del aviso de bump (con un rol y/o una persona a mencionar, opcionales).
     log_channel_id: Snowflake
     bump_channel_id: Snowflake

@@ -37,6 +37,8 @@ class RakimBot(commands.Bot):
         self.invites: dict[str, InviteInfo] | None = None
         self.join_lock = asyncio.Lock()  # las entradas se procesan de una en una
         self.welcomed: set[int] = set()  # evita un saludo doble
+        # Miembros cuyo mensaje nativo de entrada ya llegó (o se está esperando).
+        self.system_messages: dict[int, asyncio.Event] = {}
         self.started = False
 
     async def setup_hook(self) -> None:
