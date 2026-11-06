@@ -1,6 +1,9 @@
 import json
+import logging
 import os
 from pathlib import Path
+
+log = logging.getLogger("rakim")
 
 
 class State:
@@ -13,7 +16,12 @@ class State:
         self.path = Path(path)
         self.bump_due_at: float | None = None
         if self.path.exists():
-            self.bump_due_at = json.loads(self.path.read_text()).get("bump_due_at")
+            try:
+                self.bump_due_at = json.loads(self.path.read_text()).get("bump_due_at")
+            except OSError, ValueError, AttributeError:
+                # Un archivo ilegible no debe impedir que el bot arranque: solo se pierde
+                # el aviso de bump pendiente.
+                log.exception("No se pudo leer %s; se arranca sin estado", self.path)
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)

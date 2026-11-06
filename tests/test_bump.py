@@ -178,3 +178,15 @@ def test_recognises_the_real_disboard_confirmation():
     assert is_bump_success(
         DISBOARD, [embed_title, embed_description], DISBOARD, pattern
     )
+
+
+def test_state_survives_a_corrupt_file(tmp_path):
+    path = tmp_path / "state.json"
+    path.write_text("{no es json")
+    assert State(str(path)).bump_due_at is None
+
+
+def test_state_survives_an_unexpected_shape(tmp_path):
+    path = tmp_path / "state.json"
+    path.write_text("[1, 2]")
+    assert State(str(path)).bump_due_at is None
