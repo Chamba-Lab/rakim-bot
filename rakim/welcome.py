@@ -11,11 +11,18 @@ SYSTEM_MESSAGE_TIMEOUT = 10.0
 FIXED_DELAY = 5.0
 
 
+# Cuántos saludos recientes se recuerdan para no repetirlos.
+MAX_WELCOMED = 1000
+
+
 def system_message_arrived(bot: RakimBot, member_id: int) -> None:
     """Llegó el mensaje nativo de entrada de este miembro: avisa a quien lo espera.
 
-    Si llegó antes de que alguien lo espere, el aviso queda guardado.
+    Si llegó antes de que alguien lo espere, el aviso queda guardado. Sin espera
+    configurada nadie lo consumiría, así que no se guarda.
     """
+    if not bot.settings.welcome_wait_system_message:
+        return
     bot.system_messages.setdefault(member_id, asyncio.Event()).set()
 
 
@@ -49,7 +56,9 @@ async def greet(bot: RakimBot, member: discord.Member) -> None:
     """Saluda a un miembro nuevo en el canal general."""
     if member.bot or member.id in bot.welcomed:
         return
-    bot.welcomed.add(member.id)
+    bot.welcomed[member.id] = None
+    while len(bot.welcomed) > MAX_WELCOMED:  # sale el más antiguo
+        del bot.welcomed[next(iter(bot.welcomed))]
     try:
         await bot.send(
             bot.settings.welcome_channel_id,
@@ -57,5 +66,5 @@ async def greet(bot: RakimBot, member: discord.Member) -> None:
             allowed_mentions=discord.AllowedMentions(users=[member]),
         )
     except Exception:
-        bot.welcomed.discard(member.id)  # permite reintentar si el envío falló
+        bot.welcomed.pop(member.id, None)  # permite reintentar si el envío falló
         raise
