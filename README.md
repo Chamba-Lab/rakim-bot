@@ -50,7 +50,7 @@ Para probar usa **un bot y un servidor de pruebas propios**, no los de la comuni
 - Invítalo con los permisos mínimos (`19488`: Ver canales, Enviar mensajes, Insertar enlaces y Gestionar servidor, este último para leer las invitaciones):
 
 ```text
-https://discord.com/oauth2/authorize?client_id=<CLIENT_ID>&scope=bot&permissions=19488
+https://discord.com/oauth2/authorize?client_id=<CLIENT_ID>&scope=bot%20applications.commands&permissions=19488
 ```
 
 El token y los IDs viven en `.env` (que no se sube al repo; solo `.env.example`). Todo lo que Rakim escribe está en [`rakim/messages.py`](./rakim/messages.py).

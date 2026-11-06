@@ -10,6 +10,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
     1. **Bienvenida**: saluda en el canal general a quien termina la pantalla de reglas del Onboarding.
     2. **Log de entradas y salidas**: un embed en un canal privado, con la invitación usada.
     3. **Recordatorio de bump**: detecta el bump de Disboard y avisa a las 2 horas. **No ejecuta `/bump`**: un bot no puede invocar los comandos de otro, y hacerlo con una cuenta de usuario incumple los términos de Discord.
+- Además, un comando de consulta: `@Rakim invitaciones` o `/invitaciones` (solo en el canal de logs o el de bump, para quien gestiona el servidor) muestra las entradas por invitación registradas; con `todas`, también las demás.
 - Fuera de alcance: moderación avanzada, niveles o karma, gamificación, integración con Chamba Board, mensajes directos de bienvenida (parecen invasivos).
 
 **Voz de Rakim**: directa y cálida, con expresividad (un ¡! cuando toca); a veces gruñona, no siempre. Español neutro, tuteo, sin jerga local ("Chamba", el nombre, es la única excepción), frases cortas y como máximo un emoji por mensaje. Sin promesas de empleo. Hacia afuera se dice "equipo". Todo texto que escribe el bot vive en `rakim/messages.py`.
@@ -23,7 +24,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 | Ruta               | Qué hay                                                                                    |
 | :----------------- | :----------------------------------------------------------------------------------------- |
 | `rakim/bot.py`     | El cliente: intents, estado y lo que comparten los eventos                                 |
-| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`) |
+| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `stats`) |
 | `rakim/config.py`  | Variables de entorno validadas con `pydantic-settings`                                     |
 | `rakim/messages.py`| Todo lo que Rakim escribe: textos y embeds                                                 |
 | `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py` | La lógica de cada función. `invites` y `bump` no dependen de Discord |

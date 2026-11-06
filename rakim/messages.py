@@ -56,6 +56,39 @@ def describe_invites(candidates: list[InviteInfo], labels: dict[str, str]) -> st
     return text + f" · {invite.uses} {'uso' if invite.uses == 1 else 'usos'}"
 
 
+def invites_report(
+    invites: dict[str, InviteInfo], labels: dict[str, str], include_all: bool = False
+) -> str:
+    """Entradas por fuente: suma los usos de las invitaciones que comparten nombre.
+
+    Por defecto solo cuenta las registradas en `INVITE_LABELS`; con `include_all`, todas.
+    El contador de Discord es acumulado: incluye a quienes ya salieron.
+    """
+    totals: dict[str, int] = {}
+    for code, label in labels.items():  # las nombradas salen aunque tengan 0 usos
+        if code in invites:
+            totals.setdefault(label, 0)
+    for i in invites.values():
+        if i.code not in labels and not include_all:
+            continue
+        key = labels.get(i.code, f"`{i.code}`")
+        totals[key] = totals.get(key, 0) + i.uses
+    if not totals:
+        return (
+            "No hay invitaciones registradas que contar. "
+            "Usa `todas` para ver también las demás."
+        )
+    rows = sorted(totals.items(), key=lambda kv: (-kv[1], kv[0]))
+    shown = rows[:20]
+    lines = [f"**{name}**: {n}" for name, n in shown]
+    if len(rows) > len(shown):
+        lines.append(f"…y {len(rows) - len(shown)} más")
+    total = sum(n for _, n in rows)
+    scope = "todas" if include_all else "registradas"
+    header = f"Entradas por invitación, {scope} (acumulado, incluye a quien ya salió):"
+    return "\n".join([header, *lines, f"Total: {total}"])
+
+
 def _when(dt: datetime) -> str:
     """Marca de tiempo de Discord: cada persona la ve en su hora local."""
     return discord.utils.format_dt(dt, "R")
