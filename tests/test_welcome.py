@@ -19,7 +19,7 @@ def fake_bot(wait_system_message: bool):
             links_channel_id=4,
         ),
         system_messages={},
-        welcomed=set(),
+        welcomed={},
         send=send,
     )
     return bot, sent
@@ -95,3 +95,17 @@ def test_does_not_greet_twice(monkeypatch):
 
     asyncio.run(scenario())
     assert len(sent) == 1
+
+
+def test_remembers_only_the_most_recent_greetings(monkeypatch):
+    monkeypatch.setattr(welcome, "MAX_WELCOMED", 2)
+    bot, _ = fake_bot(wait_system_message=False)
+    for n in (1, 2, 3):
+        asyncio.run(welcome.greet(bot, member(n)))
+    assert list(bot.welcomed) == [2, 3]
+
+
+def test_does_not_keep_system_messages_nobody_waits_for():
+    bot, _ = fake_bot(wait_system_message=False)
+    welcome.system_message_arrived(bot, 10)
+    assert bot.system_messages == {}

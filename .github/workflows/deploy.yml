@@ -83,7 +83,7 @@ jobs:
               with:
                   persist-credentials: false
 
-            # `--pull` trae la base más reciente de Python 3.13, con los últimos parches de seguridad.
+            # `--pull` trae la base más reciente de Python 3.14, con los últimos parches de seguridad.
             - name: Build image
               run: docker build --pull --tag rakim-bot:latest .
 

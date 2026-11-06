@@ -17,6 +17,10 @@ log = logging.getLogger("rakim")
 EVENTS = ["ready", "member_join", "member_update", "member_remove", "message", "stats"]
 
 
+# Rakim no usa voz: se apaga el aviso de discord.py por no tener PyNaCl.
+discord.VoiceClient.warn_nacl = False
+
+
 class RakimBot(commands.Bot):
     def __init__(self, settings: Settings):
         # Solo los intents que usa el bot (el porqué de cada uno: docs/architecture.md).
@@ -39,7 +43,8 @@ class RakimBot(commands.Bot):
         # Usos de cada invitación en la última lectura, para deducir cuál se usó.
         self.invites: dict[str, InviteInfo] | None = None
         self.join_lock = asyncio.Lock()  # las entradas se procesan de una en una
-        self.welcomed: set[int] = set()  # evita un saludo doble
+        # Evita un saludo doble. Es un dict para conservar el orden y acotar su tamaño.
+        self.welcomed: dict[int, None] = {}
         # Miembros cuyo mensaje nativo de entrada ya llegó (o se está esperando).
         self.system_messages: dict[int, asyncio.Event] = {}
         self.started = False
