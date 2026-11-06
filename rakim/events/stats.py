@@ -43,7 +43,7 @@ async def setup(bot: RakimBot) -> None:
             await ctx.reply("No pude leer las invitaciones. Revisa mis permisos.")
             return
         await ctx.reply(
-            messages.invites_report(
+            embed=messages.invites_embed(
                 invites, bot.settings.invite_labels, include_all=alcance is not None
             )
         )

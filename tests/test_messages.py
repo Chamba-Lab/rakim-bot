@@ -75,7 +75,7 @@ def test_lists_the_candidates_when_ambiguous():
     assert text == "No se pudo determinar. Posibles: Disboard, `b`"
 
 
-def test_invites_report_groups_codes_by_label_and_sorts():
+def test_invite_totals_groups_codes_by_label_and_sorts():
     invites = {
         "a": InviteInfo("a", 5, 0, None),
         "b": InviteInfo("b", 2, 0, None),
@@ -83,29 +83,40 @@ def test_invites_report_groups_codes_by_label_and_sorts():
         "d": InviteInfo("d", 0, 0, None),
     }
     labels = {"a": "Web", "b": "Web", "c": "TikTok", "d": "LinkedIn"}
-    text = messages.invites_report(invites, labels, include_all=True)
-    assert text.index("**TikTok**: 9") < text.index("**Web**: 7")
-    assert "**LinkedIn**: 0" in text
-    assert "Total: 16" in text
+    assert messages.invite_totals(invites, labels) == [
+        ("TikTok", 9),
+        ("Web", 7),
+        ("LinkedIn", 0),
+    ]
 
 
-def test_invites_report_shows_unlabeled_codes_and_handles_none():
-    text = messages.invites_report(
-        {"x": InviteInfo("x", 1, 0, None)}, {}, include_all=True
-    )
-    assert "`x`" in text
-    assert "No hay" in messages.invites_report({}, {})
-
-
-def test_invites_report_defaults_to_registered_invites_only():
+def test_invite_totals_defaults_to_registered_invites_only():
     invites = {"a": InviteInfo("a", 5, 0, None), "x": InviteInfo("x", 8, 0, None)}
-    text = messages.invites_report(invites, {"a": "Web"})
-    assert "**Web**: 5" in text
-    assert "`x`" not in text
-    assert "Total: 5" in text
-    assert "`x`" in messages.invites_report(invites, {"a": "Web"}, include_all=True)
+    assert messages.invite_totals(invites, {"a": "Web"}) == [("Web", 5)]
+    assert messages.invite_totals(invites, {"a": "Web"}, include_all=True) == [
+        ("x", 8),
+        ("Web", 5),
+    ]
 
 
-def test_invites_report_explains_when_nothing_is_registered():
-    text = messages.invites_report({"x": InviteInfo("x", 8, 0, None)}, {})
-    assert "todas" in text
+def test_invites_embed_draws_bars_and_percentages():
+    invites = {"a": InviteInfo("a", 3, 0, None), "b": InviteInfo("b", 1, 0, None)}
+    embed = messages.invites_embed(invites, {"a": "TikTok", "b": "Web"})
+    assert embed.description is not None
+    assert "TikTok  ██████████     3   75%" in embed.description
+    assert "Web     ███░░░░░░░     1   25%" in embed.description
+    assert embed.fields[0].value == "4"
+
+
+def test_invites_embed_explains_when_nothing_is_registered():
+    embed = messages.invites_embed({"x": InviteInfo("x", 8, 0, None)}, {})
+    assert embed.description is not None
+    assert "todas" in embed.description
+
+
+def test_invites_embed_fits_the_embed_limit_with_many_invites():
+    invites = {str(n): InviteInfo(str(n), n, 0, None) for n in range(200)}
+    embed = messages.invites_embed(invites, {}, include_all=True)
+    assert embed.description is not None
+    assert len(embed.description) < 4096
+    assert "más" in embed.description

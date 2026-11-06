@@ -13,6 +13,12 @@ from .invites import InviteInfo
 
 GREEN = 0x57F287
 RED = 0xED4245
+YELLOW = 0xFACC15  # amarillo de la marca
+
+# Tabla de entradas por invitación
+MAX_ROWS = 15
+NAME_WIDTH = 16
+BAR_WIDTH = 10
 
 
 def welcome(user_id: int, s: Settings) -> str:
@@ -56,13 +62,13 @@ def describe_invites(candidates: list[InviteInfo], labels: dict[str, str]) -> st
     return text + f" · {invite.uses} {'uso' if invite.uses == 1 else 'usos'}"
 
 
-def invites_report(
+def invite_totals(
     invites: dict[str, InviteInfo], labels: dict[str, str], include_all: bool = False
-) -> str:
-    """Entradas por fuente: suma los usos de las invitaciones que comparten nombre.
+) -> list[tuple[str, int]]:
+    """Entradas por fuente, de mayor a menor: suma los usos de las invitaciones con el mismo nombre.
 
-    Por defecto solo cuenta las registradas en `INVITE_LABELS`; con `include_all`, todas.
-    El contador de Discord es acumulado: incluye a quienes ya salieron.
+    Por defecto solo cuenta las registradas en `INVITE_LABELS`; con `include_all`, todas
+    (las sin nombre salen con su código).
     """
     totals: dict[str, int] = {}
     for code, label in labels.items():  # las nombradas salen aunque tengan 0 usos
@@ -71,22 +77,42 @@ def invites_report(
     for i in invites.values():
         if i.code not in labels and not include_all:
             continue
-        key = labels.get(i.code, f"`{i.code}`")
+        key = labels.get(i.code, i.code)
         totals[key] = totals.get(key, 0) + i.uses
-    if not totals:
-        return (
+    return sorted(totals.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def invites_embed(
+    invites: dict[str, InviteInfo], labels: dict[str, str], include_all: bool = False
+) -> discord.Embed:
+    """Tabla con barras de las entradas por invitación, en un embed con el amarillo de la marca."""
+    rows = invite_totals(invites, labels, include_all)
+    embed = discord.Embed(title="Entradas por invitación", color=YELLOW)
+    if not rows:
+        embed.description = (
             "No hay invitaciones registradas que contar. "
             "Usa `todas` para ver también las demás."
         )
-    rows = sorted(totals.items(), key=lambda kv: (-kv[1], kv[0]))
-    shown = rows[:20]
-    lines = [f"**{name}**: {n}" for name, n in shown]
+        return embed
+
+    total = sum(n for _, n in rows)
+    top = rows[0][1]
+    shown = rows[:MAX_ROWS]
+    width = min(max(len(name) for name, _ in shown), NAME_WIDTH)
+    lines = []
+    for name, n in shown:
+        filled = round(BAR_WIDTH * n / top) if top else 0
+        bar = "█" * filled + "░" * (BAR_WIDTH - filled)
+        pct = f"{round(100 * n / total)}%" if total else "0%"
+        lines.append(f"{name[:NAME_WIDTH]:<{width}}  {bar}  {n:>4}  {pct:>4}")
     if len(rows) > len(shown):
         lines.append(f"…y {len(rows) - len(shown)} más")
-    total = sum(n for _, n in rows)
-    scope = "todas" if include_all else "registradas"
-    header = f"Entradas por invitación, {scope} (acumulado, incluye a quien ya salió):"
-    return "\n".join([header, *lines, f"Total: {total}"])
+    embed.description = "```\n" + "\n".join(lines) + "\n```"
+    embed.add_field(name="Total", value=str(total))
+    embed.add_field(name="Mostrando", value="todas" if include_all else "registradas")
+    embed.set_footer(text="Acumulado de Discord · incluye a quienes ya salieron")
+    embed.timestamp = discord.utils.utcnow()
+    return embed
 
 
 def _when(dt: datetime) -> str:
