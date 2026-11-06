@@ -73,3 +73,50 @@ def test_explains_when_it_could_not_be_determined():
 def test_lists_the_candidates_when_ambiguous():
     text = messages.describe_invites([invite("a"), invite("b")], {"a": "Disboard"})
     assert text == "No se pudo determinar. Posibles: Disboard, `b`"
+
+
+def test_invite_totals_groups_codes_by_label_and_sorts():
+    invites = {
+        "a": InviteInfo("a", 5, 0, None),
+        "b": InviteInfo("b", 2, 0, None),
+        "c": InviteInfo("c", 9, 0, None),
+        "d": InviteInfo("d", 0, 0, None),
+    }
+    labels = {"a": "Web", "b": "Web", "c": "TikTok", "d": "LinkedIn"}
+    assert messages.invite_totals(invites, labels) == [
+        ("TikTok", 9),
+        ("Web", 7),
+        ("LinkedIn", 0),
+    ]
+
+
+def test_invite_totals_defaults_to_registered_invites_only():
+    invites = {"a": InviteInfo("a", 5, 0, None), "x": InviteInfo("x", 8, 0, None)}
+    assert messages.invite_totals(invites, {"a": "Web"}) == [("Web", 5)]
+    assert messages.invite_totals(invites, {"a": "Web"}, include_all=True) == [
+        ("x", 8),
+        ("Web", 5),
+    ]
+
+
+def test_invites_embed_draws_bars_and_percentages():
+    invites = {"a": InviteInfo("a", 3, 0, None), "b": InviteInfo("b", 1, 0, None)}
+    embed = messages.invites_embed(invites, {"a": "TikTok", "b": "Web"})
+    assert embed.description is not None
+    assert "TikTok  ██████████     3   75%" in embed.description
+    assert "Web     ███░░░░░░░     1   25%" in embed.description
+    assert embed.fields[0].value == "4"
+
+
+def test_invites_embed_explains_when_nothing_is_registered():
+    embed = messages.invites_embed({"x": InviteInfo("x", 8, 0, None)}, {})
+    assert embed.description is not None
+    assert "todas" in embed.description
+
+
+def test_invites_embed_fits_the_embed_limit_with_many_invites():
+    invites = {str(n): InviteInfo(str(n), n, 0, None) for n in range(200)}
+    embed = messages.invites_embed(invites, {}, include_all=True)
+    assert embed.description is not None
+    assert len(embed.description) < 4096
+    assert "más" in embed.description

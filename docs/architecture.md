@@ -8,6 +8,7 @@ Discord gateway ── RakimBot (bot.py) ── events/
                                          ├─ member_join    → log de entrada (invites.py) y saludo (welcome.py)
                                          ├─ member_update  → saludo cuando termina la pantalla de reglas
                                          ├─ member_remove  → log de salida
+                                         ├─ stats          → `@Rakim invitaciones`: entradas por invitación
                                          └─ message        → detecta el bump (bump.py) ── state.py
                                                             y el mensaje nativo de entrada (welcome.py)
 ```
@@ -51,6 +52,8 @@ El canal de logs es privado: el rol de Rakim necesita acceso explícito. Si hay 
 Un embed en el canal de logs. La entrada muestra miembro, ID, antigüedad de la cuenta e **invitación usada**; la salida, desde cuándo estaba y sus roles.
 
 Discord no informa la invitación usada, así que `invites.py` la deduce: en cada entrada Rakim vuelve a leer los usos y compara con la lectura anterior. Si el contador de una subió (también una creada y usada entre las dos lecturas), esa es; si una desapareció y estaba a un uso de su límite (Discord borra las que se agotan), también. Con varias candidatas o ninguna, el log dice «no se pudo determinar» en vez de adivinar. Las entradas se procesan de una en una. `INVITE_LABELS` da nombres legibles a los códigos.
+
+**Entradas por invitación.** `@Rakim invitaciones` o `/invitaciones` (un comando híbrido, módulo `stats`) lee los usos de las invitaciones en ese momento y los suma por nombre de `INVITE_LABELS` (varios códigos con el mismo nombre se agrupan). La respuesta es un embed con una tabla de barras (conteo y porcentaje por fuente, total y alcance). Por defecto cuenta solo las registradas en `INVITE_LABELS`; con `todas` (o `all`) cuenta también las demás, por su código. Solo responde en `LOG_CHANNEL_ID` o `BUMP_CHANNEL_ID` (así no ensucia el canal de logs) y solo a quien tiene Gestionar servidor, en las dos formas; en otro canal o sin el permiso, con `/` avisa solo a quien lo usó y con mención no responde. El contador es el de Discord: acumulado, incluye a quienes ya salieron, y no guarda historial propio. La forma con mención usa el prefijo y el intent `message_content` ya existentes. La forma `/` exige el alcance `applications.commands` al invitar al bot (no pide permisos nuevos en el servidor) y se publica solo en `GUILD_ID` al arrancar; si falla, se registra y la mención sigue funcionando.
 
 **Límites**: con la invitación vanity, flujos de OAuth o dos entradas casi simultáneas puede no determinarse; las entradas con el bot apagado no se registran; el log no distingue salida voluntaria, expulsión y ban.
 

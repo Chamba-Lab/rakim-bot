@@ -13,10 +13,10 @@ Para probar usa **un bot y un servidor de pruebas propios**, no los de la comuni
 Con el `client_id` de tu aplicación (en **General Information**):
 
 ```text
-https://discord.com/oauth2/authorize?client_id=<CLIENT_ID>&scope=bot&permissions=19488
+https://discord.com/oauth2/authorize?client_id=<CLIENT_ID>&scope=bot%20applications.commands&permissions=19488
 ```
 
-`19488` son los cuatro permisos mínimos (la tabla con el porqué está en [`architecture.md`](./architecture.md#permisos-en-el-servidor)). Después, en el servidor: da al rol de Rakim acceso al **canal de logs** (es privado), a los canales de bienvenida y bump, y al canal donde Disboard responde a `/bump`.
+El alcance `applications.commands` habilita `/invitaciones`; sin él solo funciona la mención. `19488` son los cuatro permisos mínimos (la tabla con el porqué está en [`architecture.md`](./architecture.md#permisos-en-el-servidor)). Después, en el servidor: da al rol de Rakim acceso al **canal de logs** (es privado), a los canales de bienvenida y bump, y al canal donde Disboard responde a `/bump`.
 
 ## 3. Configurar el entorno
 

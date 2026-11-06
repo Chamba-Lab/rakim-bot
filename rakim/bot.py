@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Any
 
 import discord
@@ -10,8 +11,10 @@ from .config import Settings
 from .invites import InviteInfo
 from .state import State
 
+log = logging.getLogger("rakim")
+
 # Un módulo por evento de Discord, en rakim/events/.
-EVENTS = ["ready", "member_join", "member_update", "member_remove", "message"]
+EVENTS = ["ready", "member_join", "member_update", "member_remove", "message", "stats"]
 
 
 class RakimBot(commands.Bot):
@@ -23,7 +26,7 @@ class RakimBot(commands.Bot):
         intents.guild_messages = True  # mensajes de Disboard
         intents.message_content = True  # privilegiado: leer el texto de esos mensajes
         super().__init__(
-            command_prefix=commands.when_mentioned,  # el bot no tiene comandos
+            command_prefix=commands.when_mentioned,  # comando con mención (y `/invitaciones`)
             intents=intents,
             # Por defecto no menciona a nadie; cada envío permite solo lo que necesita.
             allowed_mentions=discord.AllowedMentions.none(),
@@ -44,6 +47,16 @@ class RakimBot(commands.Bot):
     async def setup_hook(self) -> None:
         for name in EVENTS:
             await self.load_extension(f"rakim.events.{name}")
+        # Los comandos `/` se publican solo en este servidor (aparecen al instante).
+        # Sin el permiso `applications.commands` falla, y el comando con mención sigue sirviendo.
+        guild = discord.Object(self.settings.guild_id)
+        self.tree.copy_global_to(guild=guild)
+        try:
+            await self.tree.sync(guild=guild)
+        except discord.HTTPException:
+            log.exception(
+                "No se pudieron publicar los comandos / (¿falta applications.commands?)"
+            )
 
     async def send(self, channel_id: int, **kwargs: Any) -> None:
         """Publica en un canal por su ID; falla con claridad si no se puede escribir ahí."""
