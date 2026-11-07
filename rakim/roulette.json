@@ -1,0 +1,140 @@
+[
+  {
+    "id": "employability",
+    "name": "💼 Empleabilidad & Carrera",
+    "options": [
+      "¿Cuál fue el primer proyecto del que sentiste orgullo?",
+      "Salarios tech: ¿cómo negociaste el tuyo o qué aprendiste?",
+      "Trabajo remoto vs oficina: ventajas y trampas invisibles",
+      "¿Cómo superaste o convives con el síndrome del impostor?",
+      "El peor error en tu primer trabajo tech y la lección aprendida",
+      "Networking real: ¿cómo conseguiste tu primer contacto clave?",
+      "Side projects: ¿cuánto tiempo les dedicas y por qué?",
+      "Cambio de carrera a tech: ¿cuál fue tu ruta y mayor desafío?",
+      "¿Qué valoras más hoy: salario alto, balance de vida o retos técnicos?",
+      "Consejos para destacar en una entrevista técnica en vivo",
+      "¿Cómo pides un aumento o promoción sin quemar puentes?",
+      "LinkedIn vs GitHub vs Portafolio: ¿cuál te dio más resultados?"
+    ]
+  },
+  {
+    "id": "tech-debates",
+    "name": "⚔️ Debates Tech & Arquitectura",
+    "options": [
+      "API REST vs GraphQL vs gRPC: ¿cuándo usar cuál?",
+      "Microservicios vs Monolito modular en 2026",
+      "TypeScript estricto vs JavaScript rápido",
+      "SQL relacional vs NoSQL: casos de uso reales",
+      "Serverless vs Docker Containers autogestionados",
+      "Monorepo (Turborepo/Nx) vs Multirepo tradicional",
+      "OOP (Objetos) vs Programación Funcional pura",
+      "Testing: Unit vs Integration vs E2E (¿dónde invertir más?)",
+      "Tailwind CSS vs Vanilla CSS vs CSS Modules",
+      "SSR (Server-Side) vs SSG (Static) vs SPA tradicional",
+      "ORMs pesados (Prisma, TypeORM) vs SQL directo (Kysely, Drizzle)",
+      "Clean Architecture vs 'Hacer que funcione y refactorizar después'"
+    ]
+  },
+  {
+    "id": "learning-early-career",
+    "name": "🌱 Qué Aprender en 2026 (Early Career)",
+    "options": [
+      "Git & GitHub colaborativo (ramas, PRs, code review y resolución de conflictos)",
+      "Fundamentos sólidos de JavaScript moderno (ES6+, DOM, async/await, promesas)",
+      "TypeScript esencial (tipos básicos, interfaces, generics y tipado de APIs)",
+      "HTML semántico, accesibilidad web (a11y) y SEO técnico inicial",
+      "CSS moderno y diseño responsive (Flexbox, CSS Grid y Tailwind CSS)",
+      "Conceptos clave de HTTP/HTTPS: métodos, códigos de estado, headers y CORS",
+      "Consumo eficiente de APIs REST y manejo de estados (loading, error, vacío)",
+      "Diseño y validación de endpoints backend simples con Zod o validadores",
+      "Bases de datos SQL relacionales (SELECT, JOINs, agregaciones y modelado básico)",
+      "Bases de datos NoSQL documentales (cuándo usarlas vs SQL tradicional)",
+      "Construcción y despliegue de un CRUD fullstack de punta a punta",
+      "Docker para desarrollo local (imágenes, contenedores y Docker Compose básico)",
+      "Pruebas unitarias básicas con Vitest o Jest (testear funciones puras y componentes)",
+      "Técnicas de depuración profesional con Chrome DevTools (breakpoints y Network)",
+      "Fundamentos de autenticación en la web (sesiones, cookies, JWT y hashing)",
+      "Variables de entorno (.env), gestión de secretos y buenas prácticas de seguridad",
+      "Línea de comandos, terminal y comandos esenciales de Bash/Linux",
+      "Gestión de paquetes y dependencias con npm/pnpm (package.json, lockfile y semver)",
+      "Integración continua básica (CI con GitHub Actions para linter y tests automáticos)",
+      "Plataformas de despliegue modernas (Vercel, Render, Railway, GitHub Pages)",
+      "Estructuras de datos y lógica para entrevistas técnicas (arrays, maps, sets, objetos)",
+      "Uso responsable de herramientas de IA (Copilot/Cursor) para aprender sin atajos dañinos",
+      "Aprender a leer documentación técnica oficial y changelogs sin depender de videos",
+      "Clean Code: escribir código legible, nombres claros y funciones pequeñas y modulares"
+    ]
+  },
+  {
+    "id": "learning-mid-senior",
+    "name": "🚀 Qué Aprender en 2026 (Mid & Senior)",
+    "options": [
+      "Python + IA aplicada en backend (LangChain, LlamaIndex, agentes autónomos)",
+      "TypeScript avanzado y arquitecturas frontend (React 19, Server Components, Astro)",
+      "Rust (rendimiento de sistemas, concurrencia y seguridad de memoria)",
+      "Go (microservicios ultra rápidos, concurrencia con goroutines y tooling cloud)",
+      "Kubernetes, Docker en producción & Infraestructura como Código (Terraform)",
+      "Cloud Native & Edge Computing en AWS / GCP / Cloudflare Workers",
+      "Bases de datos vectoriales, Embeddings e implementación de pipelines RAG",
+      "PostgreSQL avanzado a escala (índices, particionado, optimización y pgvector)",
+      "Seguridad web avanzada y hardening (OWASP Top 10, OAuth2/OIDC, Zero Trust)",
+      "Observabilidad y telemetría distribuida (OpenTelemetry, Grafana, Datadog)",
+      "Arquitecturas orientadas a eventos y streaming (Kafka, RabbitMQ, SQS, CDC)",
+      "Diseño de sistemas distribuidos y resiliencia (Circuit Breakers, Rate Limiting)"
+    ]
+  },
+  {
+    "id": "production-dilemmas",
+    "name": "🔥 Dilemas de Producción",
+    "options": [
+      "Viernes 6:00 PM: ¿haces deploy si pasa todos los tests?",
+      "Un bug tira producción: ¿rollback inmediato o fix-forward en caliente?",
+      "Deuda técnica crítica vs entregar la nueva feature del cliente",
+      "¿Escribir tests antes de programar (TDD) o después de validar?",
+      "Base de datos se queda sin conexiones en pleno pico: ¿qué revisas?",
+      "Un junior borró accidentalmente datos de staging: ¿cómo reaccionas?",
+      "¿Preferirías documentar todo el código o tener código autoexplicativo?",
+      "Herramienta open source madura vs construir tu propia solución interna",
+      "¿Optimizar el rendimiento ahora o esperar que escale el problema?",
+      "Métricas de logs saturadas: ¿pagar más almacenamiento o podar logs?",
+      "Migración de base de datos en caliente con cero downtime: ¿estrategia?",
+      "¿Permitirías acceso SSH a producción en emergencias de fin de semana?"
+    ]
+  },
+  {
+    "id": "ai-dev-future",
+    "name": "🤖 IA & Futuro del Dev",
+    "options": [
+      "Vibe coding vs escribir y entender cada línea de código",
+      "¿GitHub Copilot, Cursor o Supermaven? ¿Cuál es tu flujo?",
+      "¿Cómo evalúas y auditas el código generado por IA en un PR?",
+      "¿Deberían los programadores juniors aprender sin IA al inicio?",
+      "¿La IA democratiza el software o bajará la calidad técnica?",
+      "¿Qué habilidades blandas serán irremplazables por la IA?",
+      "Herramientas de testing con IA: ¿confiables o falsos positivos?",
+      "¿Usas IA para aprender conceptos complejos o solo para autocompletar?",
+      "¿Cuánto tiempo ahorras realmente a la semana usando IA?",
+      "¿Reemplazarán los agentes autónomos el rol de QA y testing manual?",
+      "Prompt Engineering: ¿habilidad real o moda pasajera?",
+      "El futuro de los frameworks frontend en la era de los agentes IA"
+    ]
+  },
+  {
+    "id": "icebreaker-culture",
+    "name": "⚡ Rompehielos & Cultura Dev",
+    "options": [
+      "¿Tabs o espacios? (Y prepárate para defender tu postura)",
+      "¿Modo oscuro obligatorio o te atreves a usar modo claro?",
+      "Música para codear: ¿Lofi, Synthwave, Metal, Silencio o Reggaetón?",
+      "Tu peor desvelo programando: ¿qué estabas intentando arreglar?",
+      "¿Monitor vertical para código o doble monitor panorámico?",
+      "Café, té, mate o bebidas energéticas: ¿cuál es tu combustible?",
+      "¿Cuál fue el primer lenguaje con el que aprendiste a programar?",
+      "Teclado mecánico: ¿switches clicky, táctiles o lineales silenciosos?",
+      "Tu atajo de teclado favorito que nadie más parece usar",
+      "¿Prefieres trabajar 4 días intensos de 10h o 5 días de 8h?",
+      "¿Qué meme de programadores te describe con total precisión?",
+      "Si pudieras borrar un lenguaje de la historia, ¿cuál elegirías?"
+    ]
+  }
+]

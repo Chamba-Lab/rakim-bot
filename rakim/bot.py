@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import datetime
 from typing import Any
 
 import discord
@@ -14,7 +15,17 @@ from .state import State
 log = logging.getLogger("rakim")
 
 # Un módulo por evento de Discord, en rakim/events/.
-EVENTS = ["ready", "member_join", "member_update", "member_remove", "message", "stats"]
+EVENTS = [
+    "ready",
+    "member_join",
+    "member_update",
+    "member_remove",
+    "message",
+    "stats",
+    "status",
+    "roulette",
+    "command_error",
+]
 
 
 # Rakim no usa voz: se apaga el aviso de discord.py por no tener PyNaCl.
@@ -30,7 +41,8 @@ class RakimBot(commands.Bot):
         intents.guild_messages = True  # mensajes de Disboard
         intents.message_content = True  # privilegiado: leer el texto de esos mensajes
         super().__init__(
-            command_prefix=commands.when_mentioned,  # comando con mención (y `/invitaciones`)
+            command_prefix=commands.when_mentioned,  # comandos con mención (y con `/`)
+            help_command=None,  # el `help` por defecto respondería a cualquiera
             intents=intents,
             # Por defecto no menciona a nadie; cada envío permite solo lo que necesita.
             allowed_mentions=discord.AllowedMentions.none(),
@@ -48,6 +60,14 @@ class RakimBot(commands.Bot):
         # Miembros cuyo mensaje nativo de entrada ya llegó (o se está esperando).
         self.system_messages: dict[int, asyncio.Event] = {}
         self.started = False
+        self.started_at: datetime | None = None
+
+    def in_staff_channel(self, channel_id: int) -> bool:
+        """Los comandos del equipo solo responden en el canal de logs y en el de bump."""
+        return channel_id in (
+            self.settings.log_channel_id,
+            self.settings.bump_channel_id,
+        )
 
     async def setup_hook(self) -> None:
         for name in EVENTS:

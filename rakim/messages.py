@@ -4,12 +4,14 @@ Voz de Rakim: directa, cálida y expresiva (un ¡! cuando toca); a veces gruñon
 Español neutro, tuteo y un solo emoji como máximo.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import discord
 
 from .config import Settings
+from .health import Check
 from .invites import InviteInfo
+from .roulette import Preset
 
 GREEN = 0x57F287
 RED = 0xED4245
@@ -111,6 +113,49 @@ def invites_embed(
     embed.add_field(name="Total", value=str(total))
     embed.add_field(name="Mostrando", value="todas" if include_all else "registradas")
     embed.set_footer(text="Acumulado de Discord · incluye a quienes ya salieron")
+    embed.timestamp = discord.utils.utcnow()
+    return embed
+
+
+def roulette_embed(preset_name: str, topic: str) -> discord.Embed:
+    """El tema de la ruleta. El emoji del grupo (viene en su nombre) es el único del mensaje."""
+    embed = discord.Embed(
+        title="La ruleta dice…", description=f"**{topic}**", color=YELLOW
+    )
+    embed.set_footer(text=f"{preset_name} · otra vuelta con /ruleta")
+    return embed
+
+
+def roulette_unknown(presets: list[Preset]) -> str:
+    names = ", ".join(f"`{p.id}`" for p in presets)
+    return f"No conozco ese grupo. Prueba con: {names}."
+
+
+def status_embed(
+    checks: list[Check],
+    latency: float,
+    started_at: datetime | None,
+    bump_due_at: float | None,
+) -> discord.Embed:
+    """Estado de Rakim: una línea por comprobación, y los datos del proceso."""
+    ok = all(c.ok for c in checks)
+    embed = discord.Embed(
+        title="Estado de Rakim" if ok else "Rakim tiene pendientes",
+        color=GREEN if ok else RED,
+    )
+    embed.description = "\n".join(
+        f"{'✔' if c.ok else '✘'} **{c.name}**" + (f": {c.detail}" if c.detail else "")
+        for c in checks
+    )
+    embed.add_field(name="Latencia", value=f"{latency * 1000:.0f} ms")
+    if started_at:
+        embed.add_field(name="Activo desde", value=_when(started_at))
+    due = (
+        _when(datetime.fromtimestamp(bump_due_at, tz=UTC))
+        if bump_due_at
+        else "sin aviso pendiente"
+    )
+    embed.add_field(name="Próximo bump", value=due)
     embed.timestamp = discord.utils.utcnow()
     return embed
 
