@@ -8,6 +8,16 @@ El bot de Discord de [Chamba Lab](https://chambalab.org), una comunidad tech par
 2. **Registra entradas y salidas.** En un canal privado publica quién entró o salió, con la invitación usada, la antigüedad de la cuenta y los roles.
 3. **Recuerda el bump.** Detecta el bump de Disboard y avisa cuando pasan las 2 horas de enfriamiento. No ejecuta `/bump`: un bot no puede invocar los comandos de otro.
 
+Y estos comandos (con `/` o mencionando a Rakim):
+
+| Comando        | Quién y dónde                                  | Qué hace                                                        |
+| :------------- | :--------------------------------------------- | :-------------------------------------------------------------- |
+| `/invitaciones` | Quien gestiona el servidor, en logs o bump    | Entradas por invitación registrada (`todas` incluye las demás)  |
+| `/estado`      | Quien gestiona el servidor, en logs o bump     | Permisos, canales e invitaciones comprobados, latencia y bump   |
+| `/ruleta`      | Cualquiera, en cualquier canal                 | Un tema de conversación al azar (`tema` elige el grupo)         |
+
+Al arrancar, Rakim también comprueba sus permisos y canales y avisa en el canal de logs de lo que falte.
+
 Cómo funciona cada una, los intents y los permisos: [`docs/architecture.md`](./docs/architecture.md).
 
 ## Instalación
@@ -67,7 +77,7 @@ El token y los IDs viven en `.env` (que no se sube al repo; solo `.env.example`)
 
 ## Despliegue
 
-Rakim corre en un **Droplet de DigitalOcean de US$4/mes (US$48 al año)** dentro de un contenedor Docker, y, **una vez activado** (`DEPLOY_ENABLED=true`; nace apagado), cada fusión en `master` lo actualiza sola con GitHub Actions (valida, construye la imagen, la envía por SSH y reinicia). Una sola instancia a la vez: dos procesos con el mismo token saludarían y registrarían todo por duplicado. Guía paso a paso: [`docs/deployment.md`](./docs/deployment.md).
+Hoy Rakim corre **autoalojado** en un contenedor Docker (ver arriba). El despliegue a un **Droplet de DigitalOcean de US$4/mes (US$48 al año)** está preparado para cuando pase a un VPS y, **una vez activado** (`DEPLOY_ENABLED=true`; nace apagado), cada fusión en `master` lo actualiza sola con GitHub Actions (valida, construye la imagen, la envía por SSH y reinicia). Una sola instancia a la vez: dos procesos con el mismo token saludarían y registrarían todo por duplicado. Guía paso a paso: [`docs/deployment.md`](./docs/deployment.md).
 
 ## Estructura
 

@@ -20,7 +20,11 @@ Solo las que un contribuidor o agente podría deshacer sin saberlo. Si cambias u
 - **Todos los textos en `messages.py`.** Ajustar el tono no debe exigir tocar la lógica.
 - **Config por entorno con `pydantic-settings`.** Un error se descubre al arrancar, con todos los problemas listados. Los IDs y el token son del despliegue, no del repo.
 - **El estado es un JSON, no SQLite.** Lo único que debe sobrevivir a un reinicio es el momento del aviso de bump. Se cambia por SQLite si el bot llega a guardar más.
-- **Sin comandos slash en la v0.** El bot solo reacciona a eventos. (El ejemplo de bot de Discord de Supabase usa el endpoint HTTP de interacciones, que no entrega entradas, salidas ni mensajes.)
+- **Comandos híbridos desde la versión 1** (`/comando` y `@Rakim comando`). La v0 solo reaccionaba a eventos. Se agregaron comandos de consulta y de ambiente, no de moderación. Se ejecutan por el gateway que ya usa el bot, no por el endpoint HTTP de interacciones (el del ejemplo de Supabase no entrega entradas, salidas ni mensajes). Los `/` se publican solo en `GUILD_ID` al arrancar y requieren el alcance `applications.commands` al invitar al bot.
+- **Los comandos del equipo (`invitaciones`, `estado`) responden solo en el canal de logs y el de bump, y solo a quien tiene Gestionar servidor**, en las dos formas. El canal de bump es más visible que el de logs: por eso el permiso se comprueba también con mención y no solo con el filtro del `/`.
+- **`/ruleta` sin restricción de canal ni de rol**, con un enfriamiento de 15 s por canal. Es contenido público pensado para animar cualquier conversación; el enfriamiento evita que llene un canal. Los temas son una copia de `src/content/roulette.json` del sitio, dentro del bot (`rakim/roulette.json`): sin consultar el sitio en línea no hay dependencia de red ni de un tercero al responder. Al cambiar los temas en el sitio, se vuelve a copiar.
+- **`/estado` es efímero con `/`** y la comprobación inicial solo escribe en el canal de logs si hay algo que corregir: un arranque sano no genera ruido.
+- **Sin comando `help`**: el de discord.py respondería a cualquiera que mencione al bot y listaría los comandos del equipo.
 
 ## Discord
 

@@ -4,11 +4,14 @@ Un solo proceso de Python mantiene una conexión permanente (_gateway_) con Disc
 
 ```text
 Discord gateway ── RakimBot (bot.py) ── events/
-                                         ├─ ready          → lee invitaciones, retoma el aviso de bump
+                                         ├─ ready          → lee invitaciones, comprueba permisos (health.py), retoma el aviso de bump
                                          ├─ member_join    → log de entrada (invites.py) y saludo (welcome.py)
                                          ├─ member_update  → saludo cuando termina la pantalla de reglas
                                          ├─ member_remove  → log de salida
-                                         ├─ stats          → `@Rakim invitaciones`: entradas por invitación
+                                         ├─ stats          → `/invitaciones`: entradas por invitación
+                                         ├─ status         → `/estado`: permisos, canales e invitaciones
+                                         ├─ roulette       → `/ruleta`: un tema al azar (roulette.py)
+                                         ├─ command_error  → registra los fallos de comandos
                                          └─ message        → detecta el bump (bump.py) ── state.py
                                                             y el mensaje nativo de entrada (welcome.py)
 ```
@@ -57,6 +60,17 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 
 **Límites**: con la invitación vanity, flujos de OAuth o dos entradas casi simultáneas puede no determinarse; las entradas con el bot apagado no se registran; el log no distingue salida voluntaria, expulsión y ban.
 
+## Estado y comprobación inicial
+
+`health.py` revisa, sin hablar con Discord, lo que Rakim necesita: el permiso Gestionar servidor; en cada canal configurado, ver el canal y, donde escribe, enviar mensajes e insertar enlaces; y que cada código de `INVITE_LABELS` coincida con una invitación existente (un código mal escrito es el fallo más fácil de pasar por alto). Se usa en dos sitios:
+
+- **Al arrancar** (`ready`): si algo falla, lo registra en el log y publica el resultado en el canal de logs. Si todo está en orden, solo una línea en el log.
+- **`/estado`** (o `@Rakim estado`): la misma comprobación con datos frescos, más la latencia, desde cuándo está activo y el próximo bump. Mismas restricciones que `/invitaciones`; con `/` la respuesta es efímera.
+
+## Ruleta
+
+`roulette.py` y el comando `/ruleta [tema]`. Los temas están en `rakim/roulette.json`, una copia de `src/content/roulette.json` de `Chamba-Lab/home` (7 grupos, 96 temas). Sin `tema` sale uno de todos; con `tema`, del grupo elegido (con `/` el menú ofrece los grupos; con mención se acepta el id o parte del nombre). No repite el último tema que salió en ese canal. Funciona en cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal. No usa permisos ni intents nuevos.
+
 ## Recordatorio de bump
 
 `bump.py`. Llega un mensaje del bot de Disboard (`DISBOARD_BOT_ID`) cuyo texto o embed coincide con `BUMP_SUCCESS_PATTERN`; la respuesta de «espera X minutos» no coincide, así que no reinicia nada. `BumpReminder` guarda `bump_due_at` en el estado y arma una tarea que, al vencer, borra el estado y publica el aviso en el canal de bump (mencionando `BUMP_ROLE_ID`, si existe). Un bump nuevo reemplaza al pendiente. Al arrancar retoma un aviso pendiente; si venció con el bot apagado, avisa al instante, una sola vez. Si el envío falla, no se reintenta (se registra el error).
@@ -65,4 +79,4 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 
 - **Estado** (`state.py`): un JSON con `bump_due_at`, escrito a un archivo aparte y renombrado para que un corte no lo deje a medias. `data/` no se sube al repo; en producción es un volumen.
 - **Configuración** (`config.py`): variables de entorno (o `.env`) validadas al arrancar; si falta algo, el proceso termina listando todos los problemas. `.env.example` explica cada una.
-- **Textos** (`messages.py`): bienvenida, aviso de bump y embeds del log.
+- **Textos** (`messages.py`): bienvenida, aviso de bump, embeds del log y de los comandos.
