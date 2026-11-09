@@ -32,6 +32,23 @@ def member(member_id=10):
 def fast(monkeypatch):
     monkeypatch.setattr(welcome, "SYSTEM_MESSAGE_TIMEOUT", 0.05)
     monkeypatch.setattr(welcome, "FIXED_DELAY", 0.05)
+    monkeypatch.setattr(welcome, "AFTER_SYSTEM_MESSAGE_DELAY", 0.05)
+
+
+def test_pauses_after_the_system_message_before_greeting(monkeypatch):
+    fast(monkeypatch)
+    bot, sent = fake_bot(wait_system_message=True)
+
+    async def scenario():
+        task = asyncio.create_task(welcome.greet_in_order(bot, member()))
+        await asyncio.sleep(0)
+        welcome.system_message_arrived(bot, 10)
+        await asyncio.sleep(0.01)
+        assert sent == []  # llegó el mensaje nativo, pero aún corre la pausa
+        await task
+
+    asyncio.run(scenario())
+    assert len(sent) == 1
 
 
 def test_greets_after_the_system_message(monkeypatch):
@@ -52,6 +69,7 @@ def test_greets_after_the_system_message(monkeypatch):
 
 def test_system_message_that_came_first_is_not_lost(monkeypatch):
     monkeypatch.setattr(welcome, "SYSTEM_MESSAGE_TIMEOUT", 5.0)
+    monkeypatch.setattr(welcome, "AFTER_SYSTEM_MESSAGE_DELAY", 0.05)
     bot, sent = fake_bot(wait_system_message=True)
     welcome.system_message_arrived(bot, 10)
 
