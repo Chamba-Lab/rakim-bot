@@ -9,6 +9,9 @@ from .bot import RakimBot
 SYSTEM_MESSAGE_TIMEOUT = 10.0
 # Pausa fija cuando no se espera el mensaje nativo (está desactivado en el servidor).
 FIXED_DELAY = 5.0
+# Pausa tras el mensaje nativo: saludar justo después hace que la notificación le
+# llegue a quien aún está cargando el servidor y la mención no siempre se resuelva.
+AFTER_SYSTEM_MESSAGE_DELAY = 2.5
 
 
 # Cuántos saludos recientes se recuerdan para no repetirlos.
@@ -40,13 +43,15 @@ async def wait_for_system_message(bot: RakimBot, member_id: int) -> None:
 async def greet_in_order(bot: RakimBot, member: discord.Member) -> None:
     """Saluda después del mensaje nativo de Discord, para que el saludo no salga antes.
 
-    Con `welcome_wait_system_message` espera ese mensaje (con un máximo); sin él,
+    Con `welcome_wait_system_message` espera ese mensaje (con un máximo) y deja una
+    pausa corta para que quien entra termine de cargar el servidor; sin él,
     una pausa fija da a Discord el mismo margen para dejar listo al miembro.
     """
     if member.bot or member.id in bot.welcomed:
         return
     if bot.settings.welcome_wait_system_message:
         await wait_for_system_message(bot, member.id)
+        await asyncio.sleep(AFTER_SYSTEM_MESSAGE_DELAY)
     else:
         await asyncio.sleep(FIXED_DELAY)
     await greet(bot, member)
