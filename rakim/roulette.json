@@ -136,5 +136,23 @@
       "¿Qué meme de programadores te describe con total precisión?",
       "Si pudieras borrar un lenguaje de la historia, ¿cuál elegirías?"
     ]
+  },
+  {
+    "id": "daily-learning",
+    "name": "🧭 Día a día & Aprendizaje",
+    "options": [
+      "¿Qué estás aprendiendo estos días? Cuéntalo en una línea.",
+      "¿Qué video, artículo o tutorial te hizo decir \"¡ahora sí lo entendí!\"?",
+      "Te trabas con un bug: ¿cuánto tiempo le das antes de pedir ayuda?",
+      "¿Qué concepto te costó muchísimo y hoy te parece obvio?",
+      "Un hábito pequeño que haya cambiado tu forma de estudiar o trabajar",
+      "Si empezaras hoy desde cero en tech, ¿qué harías distinto?",
+      "¿Qué aprendiste de alguien de tu equipo que no venía en ningún curso?",
+      "Sale una herramienta nueva cada semana: ¿cómo decides cuál vale la pena?",
+      "¿Tomas notas cuando aprendes? ¿Papel, Notion, Obsidian o pura memoria?",
+      "¿Dónde te concentras mejor: casa, café, biblioteca u oficina?",
+      "¿Cuál fue tu pequeño logro tech de esta semana? Vale todo, hasta un bug cerrado.",
+      "¿Qué haces para desconectarte después de un día largo frente a la pantalla?"
+    ]
   }
 ]
