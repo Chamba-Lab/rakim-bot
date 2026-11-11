@@ -1,7 +1,9 @@
+import asyncio
 import logging
 
 import discord
-from discord.ext import tasks
+from discord import app_commands
+from discord.ext import commands, tasks
 
 from .. import messages
 from ..bot import RakimBot
@@ -13,17 +15,58 @@ log = logging.getLogger("rakim")
 
 async def setup(bot: RakimBot) -> None:
     s = bot.settings
-    if not s.topic_times:
-        log.info("Tema del día apagado (DAILY_TOPIC_TIMES está vacío)")
-        return
     presets = select_presets(load_presets(), s.topic_preset_ids)
+    # El automático y el manual comparten ciclo: el candado evita que, si coinciden,
+    # los dos elijan el mismo tema antes de que el otro lo guarde.
+    lock = asyncio.Lock()
+
+    async def post() -> str:
+        async with lock:
+            return await post_topic(bot, presets)
+
+    # A mano, para el equipo. No reemplaza ni mueve el automático: solo gasta un tema
+    # del mismo ciclo, así que el de la hora programada trae otro.
+    @commands.hybrid_command(
+        name="tema",
+        aliases=["topic"],
+        description="Publica ahora un tema del día en el canal general",
+    )
+    @app_commands.default_permissions(manage_guild=True)
+    @app_commands.guild_only()
+    @commands.has_permissions(manage_guild=True)  # también para la forma con mención
+    async def tema(ctx: commands.Context[RakimBot]) -> None:
+        if ctx.guild is None or ctx.guild.id != s.guild_id:
+            return
+        # Se lanza desde los canales del equipo; el tema sale en el general.
+        if not bot.in_staff_channel(ctx.channel.id):
+            if ctx.interaction:
+                await ctx.reply(
+                    "Este comando solo funciona en el canal de logs o en el de bump.",
+                    ephemeral=True,
+                )
+            return
+        try:
+            topic = await post()
+        except Exception:
+            log.exception("No se pudo publicar el tema del día a mano")
+            await ctx.reply(messages.daily_topic_failed(), ephemeral=True)
+            return
+        await ctx.reply(
+            messages.daily_topic_posted(topic, s.welcome_channel_id), ephemeral=True
+        )
+
+    bot.add_command(tema)
+
+    if not s.topic_times:
+        log.info("Tema del día automático apagado (DAILY_TOPIC_TIMES está vacío)")
+        return
 
     # Sale a las horas fijas, aunque el canal tenga conversación: no se vigila la
     # actividad. Si el bot está apagado a esa hora, ese tema no se envía después.
     @tasks.loop(time=s.topic_times)
     async def daily_topic() -> None:
         try:
-            await post_topic(bot, presets)
+            await post()
         except Exception:
             # Una excepción sin capturar detendría el loop hasta el próximo reinicio.
             log.exception("No se pudo publicar el tema del día")
@@ -35,7 +78,8 @@ async def setup(bot: RakimBot) -> None:
     daily_topic.start()
 
 
-async def post_topic(bot: RakimBot, presets: list[Preset]) -> None:
+async def post_topic(bot: RakimBot, presets: list[Preset]) -> str:
+    """Publica el siguiente tema del ciclo en el canal general y lo devuelve."""
     s = bot.settings
     preset, topic, used = next_topic(presets, bot.state.used_topics)
     # Solo se menciona el rol de Actividades, si existe.
@@ -51,3 +95,4 @@ async def post_topic(bot: RakimBot, presets: list[Preset]) -> None:
     bot.state.used_topics = used
     bot.state.save()
     log.info("Tema del día publicado: %s", topic)
+    return topic

@@ -138,3 +138,13 @@ def test_daily_topic_embed_shows_the_topic_and_its_group():
     assert embed.title == "Tema del día"
     assert embed.description == "**¿Qué estás aprendiendo?**"
     assert embed.footer.text == "🧭 Día a día & Aprendizaje · mañana hay otro"
+
+
+def test_daily_topic_posted_confirms_the_channel_and_topic():
+    text = messages.daily_topic_posted("¿Qué estás aprendiendo?", 333333333333333333)
+    assert "<#333333333333333333>" in text
+    assert "**¿Qué estás aprendiendo?**" in text
+
+
+def test_daily_topic_failed_points_to_the_status_command():
+    assert "/estado" in messages.daily_topic_failed()
