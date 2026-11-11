@@ -11,7 +11,7 @@ Discord gateway ── RakimBot (bot.py) ── events/
                                          ├─ stats          → `/invitaciones`: entradas por invitación
                                          ├─ status         → `/estado`: permisos, canales e invitaciones
                                          ├─ roulette       → `/ruleta`: un tema al azar (roulette.py)
-                                         ├─ daily_topic    → el tema del día en general (daily_topic.py) ── state.py
+                                         ├─ daily_topic    → el tema del día en general y `/tema` (daily_topic.py) ── state.py
                                          ├─ command_error  → registra los fallos de comandos
                                          └─ message        → detecta el bump (bump.py) ── state.py
                                                             y el mensaje nativo de entrada (welcome.py)
@@ -79,6 +79,7 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 `daily_topic.py` y el módulo `events/daily_topic`. A las horas de `DAILY_TOPIC_TIMES` (de Lima, UTC-5 fijo: Perú no tiene horario de verano; en la comunidad, una vez al día a las 18:00), Rakim publica en el canal general (`WELCOME_CHANNEL_ID`) una línea con la mención al rol de `DAILY_TOPIC_ROLE_ID` (si existe) y el tema en el embed amarillo de la ruleta, con el grupo en el pie. Los temas salen de los grupos de `DAILY_TOPIC_PRESETS` (por defecto Empleabilidad, Rompehielos y Día a día: 36 temas).
 
 - **Ciclo propio**: no repite un tema hasta haber usado todos, y al empezar otra vuelta no repite el último. Es independiente de `/ruleta`. Los temas usados se guardan por texto en el estado, así que sobreviven a un reinicio; al copiar un `roulette.json` nuevo, los temas nuevos entran al ciclo y los borrados se olvidan.
+- **A mano con `/tema`** (o `@Rakim tema`): publica ya el siguiente tema del mismo ciclo. Mismas restricciones que `/estado` (canal de logs o de bump, Gestionar servidor); el tema sale en el general y, con `/`, la confirmación es efímera. No reemplaza ni mueve el automático: solo gasta un tema, y el de la hora programada trae otro. Un candado evita que, si coinciden, los dos elijan el mismo tema. Funciona aunque `DAILY_TOPIC_TIMES` esté vacío.
 - **Sale siempre a su hora**: no se mira si hubo conversación. Si el bot está apagado a esa hora, ese día no hay tema (no se envía tarde). Un envío fallido se registra y no gasta el tema.
 - Con `DAILY_TOPIC_TIMES` vacío la función está apagada. Una hora o un grupo mal escritos hacen fallar el arranque, como el resto de la configuración.
 - La comprobación inicial y `/estado` revisan, si la función está activa, que Rakim pueda insertar enlaces en general y que el rol exista y se pueda mencionar ahí.

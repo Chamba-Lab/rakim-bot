@@ -16,6 +16,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
     - `invitaciones` (`todas`): entradas por invitación registrada. Solo en el canal de logs o el de bump, para quien gestiona el servidor.
     - `estado`: permisos, canales e invitaciones comprobados, latencia y próximo bump. Mismas restricciones; con `/` la respuesta es efímera.
     - `ruleta` (`tema`): un tema de conversación al azar. En cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal.
+    - `tema`: publica ya un tema del día en el canal general, del mismo ciclo que el automático (gasta un tema; no reemplaza ni mueve el programado). Mismas restricciones que `estado`; con `/` la confirmación es efímera. Funciona aunque el automático esté apagado.
 - **Comprobación al arrancar**: Rakim revisa sus permisos y canales y avisa en el log (y en el canal de logs) de lo que falte.
 - Fuera de alcance: moderación avanzada, niveles o karma, gamificación, integración con Chamba Board, mensajes directos de bienvenida (parecen invasivos).
 
