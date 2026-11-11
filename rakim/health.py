@@ -26,6 +26,7 @@ def check_setup(
     guild: discord.Guild, settings: Settings, invites: dict[str, InviteInfo] | None
 ) -> list[Check]:
     me = guild.me
+    topics_on = bool(settings.topic_times)
     channels = [
         # (nombre, ID, permisos que necesita ahí)
         (
@@ -41,7 +42,8 @@ def check_setup(
         (
             "Canal general",
             settings.welcome_channel_id,
-            ("view_channel", "send_messages"),
+            # El tema del día va en un embed.
+            ("view_channel", "send_messages") + (("embed_links",) if topics_on else ()),
         ),
         ("Canal de presentaciones", settings.intro_channel_id, ("view_channel",)),
         ("Canal de preguntas", settings.ask_feedback_channel_id, ("view_channel",)),
@@ -76,4 +78,30 @@ def check_setup(
         if unknown:
             detail += f"; sin invitación para {', '.join(f'`{c}`' for c in unknown)}"
         checks.append(Check("Invitaciones", not unknown, detail))
+
+    if topics_on and settings.daily_topic_role_id:
+        checks.append(topic_role_check(guild, settings.daily_topic_role_id, settings))
     return checks
+
+
+def topic_role_check(guild: discord.Guild, role_id: int, settings: Settings) -> Check:
+    """Que el rol del tema del día exista y que Rakim pueda mencionarlo en el general.
+
+    Discord no tiene un permiso para mencionar un rol concreto: hace falta que el rol sea
+    mencionable por cualquiera o que Rakim tenga «Mencionar @everyone, @here y todos los
+    roles» en ese canal. Sin esto, el tema sale igual, pero la mención no notifica.
+    """
+    name = "Rol del tema del día"
+    role = guild.get_role(role_id)
+    if role is None:
+        return Check(name, False, "no existe")
+    channel = guild.get_channel(settings.welcome_channel_id)
+    can = role.mentionable or (
+        channel is not None and channel.permissions_for(guild.me).mention_everyone
+    )
+    detail = (
+        ""
+        if can
+        else "no puedo mencionarlo en el canal general: falta «Mencionar @everyone, @here y todos los roles» ahí"
+    )
+    return Check(name, can, detail)

@@ -120,3 +120,21 @@ def test_invites_embed_fits_the_embed_limit_with_many_invites():
     assert embed.description is not None
     assert len(embed.description) < 4096
     assert "más" in embed.description
+
+
+def test_daily_topic_mentions_the_role_when_configured():
+    assert messages.daily_topic(555555555555555555).startswith(
+        "<@&555555555555555555> "
+    )
+    assert messages.daily_topic(None) == (
+        "¡Tema del día! Responde aquí, aunque sea en una línea."
+    )
+
+
+def test_daily_topic_embed_shows_the_topic_and_its_group():
+    embed = messages.daily_topic_embed(
+        "🧭 Día a día & Aprendizaje", "¿Qué estás aprendiendo?"
+    )
+    assert embed.title == "Tema del día"
+    assert embed.description == "**¿Qué estás aprendiendo?**"
+    assert embed.footer.text == "🧭 Día a día & Aprendizaje · mañana hay otro"

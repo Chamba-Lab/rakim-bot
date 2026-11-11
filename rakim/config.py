@@ -1,8 +1,12 @@
 import re
+from datetime import time
 from typing import Annotated
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from .daily_topic import parse_times, select_presets, split_list
+from .roulette import load_presets
 
 # Un ID de Discord (snowflake) tiene entre 17 y 20 dígitos.
 Snowflake = Annotated[int, Field(ge=10**16, lt=10**20)]
@@ -42,8 +46,34 @@ class Settings(BaseSettings):
     # Nombres legibles para los códigos de invitación: {"codigo": "nombre"}.
     invite_labels: dict[str, str] = {}
 
+    # Tema del día en el canal general: horas de Lima separadas por coma (vacío lo apaga),
+    # rol a mencionar (opcional) y grupos de `roulette.json` de los que sale.
+    daily_topic_times: str = ""
+    daily_topic_role_id: Snowflake | None = None
+    daily_topic_presets: str = "employability,icebreaker-culture,daily-learning"
+
     state_path: str = "data/state.json"
+
+    @field_validator("daily_topic_times")
+    @classmethod
+    def _valid_times(cls, value: str) -> str:
+        parse_times(value)
+        return value
+
+    @field_validator("daily_topic_presets")
+    @classmethod
+    def _known_presets(cls, value: str) -> str:
+        select_presets(load_presets(), split_list(value))
+        return value
 
     @property
     def bump_regex(self) -> re.Pattern[str]:
         return re.compile(self.bump_success_pattern, re.IGNORECASE)
+
+    @property
+    def topic_times(self) -> list[time]:
+        return parse_times(self.daily_topic_times)
+
+    @property
+    def topic_preset_ids(self) -> list[str]:
+        return split_list(self.daily_topic_presets)
