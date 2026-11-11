@@ -14,6 +14,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 - **Tema del día**: una vez al día (18:00 de Lima) publica en el canal general un tema de la ruleta y menciona al rol de Actividades (opcional). Lleva su propio ciclo, aparte de `ruleta`, y no repite hasta haber usado todos. Se apaga dejando vacío `DAILY_TOPIC_TIMES`.
 - **Comandos** (híbridos: `/comando` y `@Rakim comando`):
     - `invitaciones` (`todas`): entradas por invitación registrada. Solo en el canal de logs o el de bump, para quien gestiona el servidor.
+    - `miembros`: miembros actuales por país y por etapa, según los roles del Onboarding (sin bots ni pendientes de aceptar las reglas). Mismas restricciones.
     - `estado`: permisos, canales e invitaciones comprobados, latencia y próximo bump. Mismas restricciones; con `/` la respuesta es efímera.
     - `ruleta` (`tema`): un tema de conversación al azar. En cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal.
     - `tema`: publica ya un tema del día en el canal general, del mismo ciclo que el automático (gasta un tema; no reemplaza ni mueve el programado). Mismas restricciones que `estado`; con `/` la confirmación es efímera. Funciona aunque el automático esté apagado.
@@ -31,10 +32,10 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 | Ruta               | Qué hay                                                                                    |
 | :----------------- | :----------------------------------------------------------------------------------------- |
 | `rakim/bot.py`     | El cliente: intents, estado y lo que comparten los eventos                                 |
-| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `command_error`), por comando (`stats`, `status`, `roulette`) y por tarea programada (`daily_topic`) |
+| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `command_error`), por comando (`stats`, `members`, `status`, `roulette`) y por tarea programada (`daily_topic`) |
 | `rakim/config.py`  | Variables de entorno validadas con `pydantic-settings`                                     |
 | `rakim/messages.py`| Todo lo que Rakim escribe: textos y embeds                                                 |
-| `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py`, `health.py`, `roulette.py`, `daily_topic.py` | La lógica de cada función. `invites`, `bump`, `health`, `roulette` y `daily_topic` se prueban sin Discord. `roulette.json` son los temas de la ruleta (y del tema del día), copiados del sitio |
+| `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py`, `health.py`, `roulette.py`, `daily_topic.py`, `members.py` | La lógica de cada función. `invites`, `bump`, `health`, `roulette`, `daily_topic` y `members` se prueban sin Discord. `roulette.json` son los temas de la ruleta (y del tema del día), copiados del sitio |
 | `tests/`           | Pruebas de la lógica con reglas                                                            |
 
 Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas con `@bot.listen()`; para sumar un evento se crea su módulo y se agrega a `EVENTS` en `bot.py`.
