@@ -126,6 +126,28 @@ def roulette_embed(preset_name: str, topic: str) -> discord.Embed:
     return embed
 
 
+def daily_topic(role_id: int | None) -> str:
+    mention = f"<@&{role_id}> " if role_id else ""
+    return f"{mention}¡Tema del día! Responde aquí, aunque sea en una línea."
+
+
+def daily_topic_embed(preset_name: str, topic: str) -> discord.Embed:
+    """El tema del día, con el formato de la ruleta. El emoji del grupo es el único del mensaje."""
+    embed = discord.Embed(
+        title="Tema del día", description=f"**{topic}**", color=YELLOW
+    )
+    embed.set_footer(text=f"{preset_name} · mañana hay otro")
+    return embed
+
+
+def daily_topic_posted(topic: str, channel_id: int) -> str:
+    return f"Listo, lo publiqué en <#{channel_id}>: **{topic}**"
+
+
+def daily_topic_failed() -> str:
+    return "No pude publicar el tema. Revisa mis permisos con `/estado`."
+
+
 def roulette_unknown(presets: list[Preset]) -> str:
     names = ", ".join(f"`{p.id}`" for p in presets)
     return f"No conozco ese grupo. Prueba con: {names}."

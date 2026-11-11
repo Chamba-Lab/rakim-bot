@@ -5,7 +5,7 @@ from rakim import messages
 from rakim.health import Check, check_setup
 from rakim.invites import InviteInfo
 
-ALL = {"view_channel", "send_messages", "embed_links"}
+ALL = {"view_channel", "send_messages", "embed_links", "mention_everyone"}
 
 
 def channel(allowed):
@@ -14,15 +14,18 @@ def channel(allowed):
     )
 
 
-def guild(channels, manage=True):
+def guild(channels, manage=True, roles=None):
     return SimpleNamespace(
         me=SimpleNamespace(guild_permissions=SimpleNamespace(manage_guild=manage)),
         get_channel=channels.get,
+        get_role=(roles or {}).get,
     )
 
 
-def settings(labels=None):
+def settings(labels=None, topic_times=(), topic_role=None):
     return SimpleNamespace(
+        topic_times=list(topic_times),
+        daily_topic_role_id=topic_role,
         log_channel_id=1,
         bump_channel_id=2,
         welcome_channel_id=3,
@@ -98,3 +101,38 @@ def test_status_embed_shows_ok_and_failures():
     )
     assert bad.title == "Rakim tiene pendientes"
     assert "✘ **B**: falta algo" in (bad.description or "")
+
+
+def test_the_daily_topic_needs_embeds_in_the_general_channel():
+    channels = healthy_channels() | {3: channel({"view_channel", "send_messages"})}
+    off = by_name(check_setup(guild(channels), settings(), {}))
+    assert off["Canal general"].ok
+    on = by_name(check_setup(guild(channels), settings(topic_times=["18:00"]), {}))
+    assert "insertar enlaces" in on["Canal general"].detail
+
+
+def test_the_daily_topic_role_must_exist():
+    s = settings(topic_times=["18:00"], topic_role=9)
+    role = by_name(check_setup(guild(healthy_channels()), s, {}))
+    assert role["Rol del tema del día"].detail == "no existe"
+
+
+def test_the_daily_topic_role_must_be_mentionable_in_the_general_channel():
+    s = settings(topic_times=["18:00"], topic_role=9)
+    closed = {9: SimpleNamespace(mentionable=False)}
+    no_permission = healthy_channels() | {3: channel(ALL - {"mention_everyone"})}
+
+    checks = by_name(check_setup(guild(no_permission, roles=closed), s, {}))
+    assert not checks["Rol del tema del día"].ok
+
+    checks = by_name(check_setup(guild(healthy_channels(), roles=closed), s, {}))
+    assert checks["Rol del tema del día"].ok
+
+    mentionable = {9: SimpleNamespace(mentionable=True)}
+    checks = by_name(check_setup(guild(no_permission, roles=mentionable), s, {}))
+    assert checks["Rol del tema del día"].ok
+
+
+def test_no_role_check_when_the_daily_topic_is_off():
+    checks = by_name(check_setup(guild(healthy_channels()), settings(topic_role=9), {}))
+    assert "Rol del tema del día" not in checks

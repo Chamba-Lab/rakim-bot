@@ -24,6 +24,9 @@ def clean_env(monkeypatch):
         "INVITE_LABELS",
         "BUMP_SUCCESS_PATTERN",
         "WELCOME_WAIT_SYSTEM_MESSAGE",
+        "DAILY_TOPIC_TIMES",
+        "DAILY_TOPIC_ROLE_ID",
+        "DAILY_TOPIC_PRESETS",
     ]:
         monkeypatch.delenv(key, raising=False)
 
@@ -42,6 +45,13 @@ def test_applies_defaults(monkeypatch):
     assert s.invite_labels == {}
     assert s.state_path == "data/state.json"
     assert s.welcome_wait_system_message is True
+    assert s.topic_times == []  # el tema del día nace apagado
+    assert s.daily_topic_role_id is None
+    assert s.topic_preset_ids == [
+        "employability",
+        "icebreaker-culture",
+        "daily-learning",
+    ]
 
 
 def test_welcome_can_stop_waiting_for_the_system_message(monkeypatch):
@@ -76,3 +86,22 @@ def test_reports_every_problem_at_once(monkeypatch):
 def test_rejects_invalid_invite_labels(monkeypatch):
     with pytest.raises(Exception, match=r"invite_labels|INVITE_LABELS"):
         settings(monkeypatch, INVITE_LABELS="no es json")
+
+
+def test_reads_the_daily_topic(monkeypatch):
+    s = settings(
+        monkeypatch,
+        DAILY_TOPIC_TIMES="18:00",
+        DAILY_TOPIC_ROLE_ID="100000000000000009",
+        DAILY_TOPIC_PRESETS="employability, daily-learning",
+    )
+    assert [t.hour for t in s.topic_times] == [18]
+    assert s.daily_topic_role_id == 100000000000000009
+    assert s.topic_preset_ids == ["employability", "daily-learning"]
+
+
+def test_rejects_an_invalid_daily_topic_time_or_preset(monkeypatch):
+    with pytest.raises(ValidationError) as error:
+        settings(monkeypatch, DAILY_TOPIC_TIMES="6pm", DAILY_TOPIC_PRESETS="no-existe")
+    fields = {e["loc"][0] for e in error.value.errors()}
+    assert fields == {"daily_topic_times", "daily_topic_presets"}
