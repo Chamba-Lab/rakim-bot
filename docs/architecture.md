@@ -11,6 +11,7 @@ Discord gateway ── RakimBot (bot.py) ── events/
                                          ├─ stats          → `/invitaciones`: entradas por invitación
                                          ├─ status         → `/estado`: permisos, canales e invitaciones
                                          ├─ roulette       → `/ruleta`: un tema al azar (roulette.py)
+                                         ├─ daily_topic    → el tema del día en general (daily_topic.py) ── state.py
                                          ├─ command_error  → registra los fallos de comandos
                                          └─ message        → detecta el bump (bump.py) ── state.py
                                                             y el mensaje nativo de entrada (welcome.py)
@@ -42,6 +43,8 @@ Se invita con `permissions=19488`:
 | Insertar enlaces   | Los embeds del log                                                                       |
 | Gestionar servidor | Leer las invitaciones y sus usos (no hay otra forma). Sensible: solo para el rol de Rakim |
 
+**Mencionar @everyone, @here y todos los roles**, solo como permiso del canal general y solo si el tema del día menciona un rol (`DAILY_TOPIC_ROLE_ID`): Discord no tiene un permiso para mencionar un rol concreto. No va en `19488` ni a nivel de servidor. El código igual limita cada envío con `AllowedMentions` al rol configurado, así que nunca sale un `@everyone`.
+
 El canal de logs es privado: el rol de Rakim necesita acceso explícito. Si hay `BUMP_ROLE_ID` (o `BUMP_USER_ID`, para mencionar a una persona), ese rol debe ser mencionable (así no hace falta el permiso de mencionar todos los roles). No se pide «Leer el historial» porque el bot solo reacciona a eventos nuevos (a confirmar en un servidor de pruebas).
 
 ## Bienvenida
@@ -69,7 +72,17 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 
 ## Ruleta
 
-`roulette.py` y el comando `/ruleta [tema]`. Los temas están en `rakim/roulette.json`, una copia de `src/content/roulette.json` de `Chamba-Lab/home` (7 grupos, 96 temas). Sin `tema` sale uno de todos; con `tema`, del grupo elegido (con `/` el menú ofrece los grupos; con mención se acepta el id o parte del nombre). No repite el último tema que salió en ese canal. Funciona en cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal. No usa permisos ni intents nuevos.
+`roulette.py` y el comando `/ruleta [tema]`. Los temas están en `rakim/roulette.json`, una copia de los `presets` de `src/content/roulette.json` de `Chamba-Lab/home` (8 grupos, 108 temas). Sin `tema` sale uno de todos; con `tema`, del grupo elegido (con `/` el menú ofrece los grupos; con mención se acepta el id o parte del nombre). No repite el último tema que salió en ese canal. Funciona en cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal. No usa permisos ni intents nuevos.
+
+## Tema del día
+
+`daily_topic.py` y el módulo `events/daily_topic`. A las horas de `DAILY_TOPIC_TIMES` (de Lima, UTC-5 fijo: Perú no tiene horario de verano; en la comunidad, una vez al día a las 18:00), Rakim publica en el canal general (`WELCOME_CHANNEL_ID`) una línea con la mención al rol de `DAILY_TOPIC_ROLE_ID` (si existe) y el tema en el embed amarillo de la ruleta, con el grupo en el pie. Los temas salen de los grupos de `DAILY_TOPIC_PRESETS` (por defecto Empleabilidad, Rompehielos y Día a día: 36 temas).
+
+- **Ciclo propio**: no repite un tema hasta haber usado todos, y al empezar otra vuelta no repite el último. Es independiente de `/ruleta`. Los temas usados se guardan por texto en el estado, así que sobreviven a un reinicio; al copiar un `roulette.json` nuevo, los temas nuevos entran al ciclo y los borrados se olvidan.
+- **Sale siempre a su hora**: no se mira si hubo conversación. Si el bot está apagado a esa hora, ese día no hay tema (no se envía tarde). Un envío fallido se registra y no gasta el tema.
+- Con `DAILY_TOPIC_TIMES` vacío la función está apagada. Una hora o un grupo mal escritos hacen fallar el arranque, como el resto de la configuración.
+- La comprobación inicial y `/estado` revisan, si la función está activa, que Rakim pueda insertar enlaces en general y que el rol exista y se pueda mencionar ahí.
+- Usa `discord.ext.tasks` (el loop atrapa sus errores: uno sin capturar lo detendría hasta el próximo reinicio). Sin intents nuevos.
 
 ## Recordatorio de bump
 
@@ -77,6 +90,6 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 
 ## Estado y configuración
 
-- **Estado** (`state.py`): un JSON con `bump_due_at`, escrito a un archivo aparte y renombrado para que un corte no lo deje a medias. `data/` no se sube al repo; en producción es un volumen.
+- **Estado** (`state.py`): un JSON con `bump_due_at` y `used_topics` (los temas del día del ciclo actual), escrito a un archivo aparte y renombrado para que un corte no lo deje a medias. `data/` no se sube al repo; en producción es un volumen.
 - **Configuración** (`config.py`): variables de entorno (o `.env`) validadas al arrancar; si falta algo, el proceso termina listando todos los problemas. `.env.example` explica cada una.
-- **Textos** (`messages.py`): bienvenida, aviso de bump, embeds del log y de los comandos.
+- **Textos** (`messages.py`): bienvenida, aviso de bump, tema del día, embeds del log y de los comandos.

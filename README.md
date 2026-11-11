@@ -7,6 +7,7 @@ El bot de Discord de [Chamba Lab](https://chambalab.org), una comunidad tech par
 1. **Da la bienvenida.** Cuando alguien termina la pantalla de reglas, Rakim lo saluda en el canal general con primeros pasos y qué ofrece el servidor.
 2. **Registra entradas y salidas.** En un canal privado publica quién entró o salió, con la invitación usada, la antigüedad de la cuenta y los roles.
 3. **Recuerda el bump.** Detecta el bump de Disboard y avisa cuando pasan las 2 horas de enfriamiento. No ejecuta `/bump`: un bot no puede invocar los comandos de otro.
+4. **Lanza el tema del día.** Una vez al día (18:00 de Lima) publica en el canal general un tema de conversación y menciona al rol de Actividades. No repite un tema hasta haber usado todos.
 
 Y estos comandos (con `/` o mencionando a Rakim):
 

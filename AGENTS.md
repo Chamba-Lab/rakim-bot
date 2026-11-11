@@ -11,6 +11,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
     1. **Bienvenida**: saluda en el canal general a quien termina la pantalla de reglas del Onboarding.
     2. **Log de entradas y salidas**: un embed en un canal privado, con la invitación usada.
     3. **Recordatorio de bump**: detecta el bump de Disboard y avisa a las 2 horas. **No ejecuta `/bump`**: un bot no puede invocar los comandos de otro, y hacerlo con una cuenta de usuario incumple los términos de Discord.
+- **Tema del día**: una vez al día (18:00 de Lima) publica en el canal general un tema de la ruleta y menciona al rol de Actividades (opcional). Lleva su propio ciclo, aparte de `ruleta`, y no repite hasta haber usado todos. Se apaga dejando vacío `DAILY_TOPIC_TIMES`.
 - **Comandos** (híbridos: `/comando` y `@Rakim comando`):
     - `invitaciones` (`todas`): entradas por invitación registrada. Solo en el canal de logs o el de bump, para quien gestiona el servidor.
     - `estado`: permisos, canales e invitaciones comprobados, latencia y próximo bump. Mismas restricciones; con `/` la respuesta es efímera.
@@ -29,10 +30,10 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 | Ruta               | Qué hay                                                                                    |
 | :----------------- | :----------------------------------------------------------------------------------------- |
 | `rakim/bot.py`     | El cliente: intents, estado y lo que comparten los eventos                                 |
-| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `command_error`) y por comando (`stats`, `status`, `roulette`) |
+| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `command_error`), por comando (`stats`, `status`, `roulette`) y por tarea programada (`daily_topic`) |
 | `rakim/config.py`  | Variables de entorno validadas con `pydantic-settings`                                     |
 | `rakim/messages.py`| Todo lo que Rakim escribe: textos y embeds                                                 |
-| `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py`, `health.py`, `roulette.py` | La lógica de cada función. `invites`, `bump`, `health` y `roulette` se prueban sin Discord. `roulette.json` son los temas de la ruleta, copiados del sitio |
+| `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py`, `health.py`, `roulette.py`, `daily_topic.py` | La lógica de cada función. `invites`, `bump`, `health`, `roulette` y `daily_topic` se prueban sin Discord. `roulette.json` son los temas de la ruleta (y del tema del día), copiados del sitio |
 | `tests/`           | Pruebas de la lógica con reglas                                                            |
 
 Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas con `@bot.listen()`; para sumar un evento se crea su módulo y se agrega a `EVENTS` en `bot.py`.
@@ -41,7 +42,7 @@ Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas 
 
 - Código, identificadores y commits **en inglés**; comentarios, textos del bot y documentación **en español**. Los comentarios explican el porqué.
 - **Configuración solo por variables de entorno** (`.env.example` las lista). Los IDs de canales y roles no van en el código. El token vive en `.env`, ignorado por git.
-- **Menciones**: el bot no menciona a nadie por defecto (`AllowedMentions.none()`); cada envío permite solo lo que necesita (la persona saludada o el rol del bump). Nunca `@everyone`.
+- **Menciones**: el bot no menciona a nadie por defecto (`AllowedMentions.none()`); cada envío permite solo lo que necesita (la persona saludada, el rol del bump o el del tema del día). Nunca `@everyone`, aunque en el canal general Rakim tenga el permiso de mencionar todos los roles.
 - **Un solo servidor**: el bot ignora cualquier servidor distinto de `GUILD_ID`.
 - **Intents**: `guilds`, `members` (privilegiado), `guild_messages` y `message_content` (privilegiado). Se pide solo lo necesario; por qué y qué se descartó: [`docs/architecture.md`](./docs/architecture.md#intents).
 - **Errores**: `discord.py` registra el fallo de un evento sin tumbar el proceso; no los tragues en silencio.
