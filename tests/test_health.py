@@ -22,8 +22,10 @@ def guild(channels, manage=True, roles=None):
     )
 
 
-def settings(labels=None, topic_times=(), topic_role=None):
+def settings(labels=None, topic_times=(), topic_role=None, countries=(), stages=()):
     return SimpleNamespace(
+        country_roles=list(countries),
+        stage_roles=list(stages),
         topic_times=list(topic_times),
         daily_topic_role_id=topic_role,
         log_channel_id=1,
@@ -136,3 +138,18 @@ def test_the_daily_topic_role_must_be_mentionable_in_the_general_channel():
 def test_no_role_check_when_the_daily_topic_is_off():
     checks = by_name(check_setup(guild(healthy_channels()), settings(topic_role=9), {}))
     assert "Rol del tema del día" not in checks
+
+
+def test_flags_member_roles_that_do_not_exist():
+    roles = {10: SimpleNamespace(mentionable=False)}
+    s = settings(countries=[10, 11], stages=[10])
+    checks = by_name(check_setup(guild(healthy_channels(), roles=roles), s, {}))
+    assert not checks["Roles de país"].ok
+    assert checks["Roles de país"].detail == "1 de 2; no existen: 11"
+    assert checks["Roles de etapa"].ok
+
+
+def test_no_member_role_checks_when_not_configured():
+    checks = by_name(check_setup(guild(healthy_channels()), settings(), {}))
+    assert "Roles de país" not in checks
+    assert "Roles de etapa" not in checks

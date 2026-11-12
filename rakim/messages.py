@@ -84,6 +84,40 @@ def invite_totals(
     return sorted(totals.items(), key=lambda kv: (-kv[1], kv[0]))
 
 
+def bar_table(rows: list[tuple[str, int]], total: int) -> str:
+    """Tabla de barras en un bloque de código: nombre, barra (relativa a la fila mayor),
+    cantidad y porcentaje sobre `total`. Muestra hasta `MAX_ROWS` filas."""
+    top = max((n for _, n in rows), default=0)
+    shown = rows[:MAX_ROWS]
+    width = min(max((len(name) for name, _ in shown), default=0), NAME_WIDTH)
+    lines = []
+    for name, n in shown:
+        filled = round(BAR_WIDTH * n / top) if top else 0
+        bar = "█" * filled + "░" * (BAR_WIDTH - filled)
+        pct = f"{round(100 * n / total)}%" if total else "0%"
+        lines.append(f"{name[:NAME_WIDTH]:<{width}}  {bar}  {n:>4}  {pct:>4}")
+    if len(rows) > len(shown):
+        lines.append(f"…y {len(rows) - len(shown)} más")
+    return "```\n" + "\n".join(lines) + "\n```"
+
+
+def members_embed(
+    sections: list[tuple[str, list[tuple[str, int]] | None]], total: int
+) -> discord.Embed:
+    """Miembros por país y por etapa: una tabla de barras por sección.
+
+    Una sección sin roles configurados (`None`) lo dice en vez de mostrar una tabla vacía.
+    """
+    embed = discord.Embed(title="Miembros", color=YELLOW)
+    for title, rows in sections:
+        value = bar_table(rows, total) if rows is not None else "Sin configurar."
+        embed.add_field(name=title, value=value, inline=False)
+    embed.add_field(name="Total", value=str(total))
+    embed.set_footer(text="Sin bots ni quienes aún no aceptan las reglas")
+    embed.timestamp = discord.utils.utcnow()
+    return embed
+
+
 def invites_embed(
     invites: dict[str, InviteInfo], labels: dict[str, str], include_all: bool = False
 ) -> discord.Embed:
@@ -98,18 +132,7 @@ def invites_embed(
         return embed
 
     total = sum(n for _, n in rows)
-    top = rows[0][1]
-    shown = rows[:MAX_ROWS]
-    width = min(max(len(name) for name, _ in shown), NAME_WIDTH)
-    lines = []
-    for name, n in shown:
-        filled = round(BAR_WIDTH * n / top) if top else 0
-        bar = "█" * filled + "░" * (BAR_WIDTH - filled)
-        pct = f"{round(100 * n / total)}%" if total else "0%"
-        lines.append(f"{name[:NAME_WIDTH]:<{width}}  {bar}  {n:>4}  {pct:>4}")
-    if len(rows) > len(shown):
-        lines.append(f"…y {len(rows) - len(shown)} más")
-    embed.description = "```\n" + "\n".join(lines) + "\n```"
+    embed.description = bar_table(rows, total)
     embed.add_field(name="Total", value=str(total))
     embed.add_field(name="Mostrando", value="todas" if include_all else "registradas")
     embed.set_footer(text="Acumulado de Discord · incluye a quienes ya salieron")

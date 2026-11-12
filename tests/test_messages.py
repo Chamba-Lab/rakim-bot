@@ -154,3 +154,19 @@ def test_every_topic_fits_as_an_embed_title():
     from rakim.roulette import load_presets
 
     assert max(len(o) for p in load_presets() for o in p.options) <= 256
+
+
+def test_members_embed_uses_the_member_total_for_percentages():
+    rows = [("Colombia", 5), ("Perú", 4), ("Sin responder", 3)]
+    embed = messages.members_embed([("Por país", rows), ("Por etapa", None)], 12)
+    country, stage, total = embed.fields
+    assert country.name == "Por país"
+    assert "Colombia       ██████████     5   42%" in (country.value or "")
+    assert "Sin responder  ██████░░░░     3   25%" in (country.value or "")
+    assert stage.value == "Sin configurar."
+    assert total.value == "12"
+
+
+def test_members_embed_with_nobody_yet():
+    embed = messages.members_embed([("Por país", [("Perú", 0)])], 0)
+    assert "Perú  ░░░░░░░░░░     0    0%" in (embed.fields[0].value or "")

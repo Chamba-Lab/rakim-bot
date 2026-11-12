@@ -81,6 +81,18 @@ def check_setup(
 
     if topics_on and settings.daily_topic_role_id:
         checks.append(topic_role_check(guild, settings.daily_topic_role_id, settings))
+
+    # Un ID mal copiado en los roles de `/miembros` dejaría ese rol fuera sin avisar.
+    for name, role_ids in (
+        ("Roles de país", settings.country_roles),
+        ("Roles de etapa", settings.stage_roles),
+    ):
+        if role_ids:
+            missing = [str(r) for r in role_ids if guild.get_role(r) is None]
+            detail = f"{len(role_ids) - len(missing)} de {len(role_ids)}"
+            if missing:
+                detail += f"; no existen: {', '.join(missing)}"
+            checks.append(Check(name, not missing, detail))
     return checks
 
 

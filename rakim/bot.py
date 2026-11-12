@@ -22,6 +22,7 @@ EVENTS = [
     "member_remove",
     "message",
     "stats",
+    "members",
     "status",
     "roulette",
     "daily_topic",
