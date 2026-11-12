@@ -102,20 +102,23 @@ def bar_table(rows: list[tuple[str, int]], total: int) -> str:
 
 
 def members_embed(
-    sections: list[tuple[str, list[tuple[str, int]] | None]], total: int
+    sections: list[tuple[str, list[tuple[str, int]]]], total: int
 ) -> discord.Embed:
-    """Miembros por país y por etapa: una tabla de barras por sección.
-
-    Una sección sin roles configurados (`None`) lo dice en vez de mostrar una tabla vacía.
-    """
+    """Cuántos miembros eligieron cada opción del Onboarding: una tabla de barras por
+    pregunta (y por roles, si se pidieron)."""
     embed = discord.Embed(title="Miembros", color=YELLOW)
+    if not sections:
+        embed.description = "El Onboarding no tiene preguntas que den roles."
     for title, rows in sections:
-        value = bar_table(rows, total) if rows is not None else "Sin configurar."
-        embed.add_field(name=title, value=value, inline=False)
+        embed.add_field(name=title[:256], value=bar_table(rows, total), inline=False)
     embed.add_field(name="Total", value=str(total))
     embed.set_footer(text="Sin bots ni quienes aún no aceptan las reglas")
     embed.timestamp = discord.utils.utcnow()
     return embed
+
+
+def onboarding_unreadable() -> str:
+    return "No pude leer el Onboarding. Revisa mis permisos con `/estado`."
 
 
 def invites_embed(

@@ -27,9 +27,6 @@ def clean_env(monkeypatch):
         "DAILY_TOPIC_TIMES",
         "DAILY_TOPIC_ROLE_ID",
         "DAILY_TOPIC_PRESETS",
-        "COUNTRY_ROLE_IDS",
-        "STAGE_ROLE_IDS",
-        "NOTIFICATION_ROLE_IDS",
     ]:
         monkeypatch.delenv(key, raising=False)
 
@@ -108,20 +105,3 @@ def test_rejects_an_invalid_daily_topic_time_or_preset(monkeypatch):
         settings(monkeypatch, DAILY_TOPIC_TIMES="6pm", DAILY_TOPIC_PRESETS="no-existe")
     fields = {e["loc"][0] for e in error.value.errors()}
     assert fields == {"daily_topic_times", "daily_topic_presets"}
-
-
-def test_reads_the_member_role_ids(monkeypatch):
-    s = settings(
-        monkeypatch,
-        COUNTRY_ROLE_IDS="100000000000000010, 100000000000000011",
-        NOTIFICATION_ROLE_IDS="100000000000000012",
-    )
-    assert s.country_roles == [100000000000000010, 100000000000000011]
-    assert s.stage_roles == []
-    assert s.notification_roles == [100000000000000012]
-
-
-def test_rejects_an_invalid_member_role_id(monkeypatch):
-    with pytest.raises(ValidationError) as error:
-        settings(monkeypatch, STAGE_ROLE_IDS="100000000000000010, Senior")
-    assert {e["loc"][0] for e in error.value.errors()} == {"stage_role_ids"}
