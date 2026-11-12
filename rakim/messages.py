@@ -155,10 +155,9 @@ def daily_topic(role_id: int | None) -> str:
 
 
 def daily_topic_embed(preset_name: str, topic: str) -> discord.Embed:
-    """El tema del día, con el formato de la ruleta. El emoji del grupo es el único del mensaje."""
-    embed = discord.Embed(
-        title="Tema del día", description=f"**{topic}**", color=YELLOW
-    )
+    """El tema del día: la pregunta es el título del embed. «Tema del día» ya lo dice la
+    línea de arriba, así que no se repite. El emoji del grupo es el único del mensaje."""
+    embed = discord.Embed(title=topic, color=YELLOW)
     embed.set_footer(text=f"{preset_name} · mañana hay otro")
     return embed
 

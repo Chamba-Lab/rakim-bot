@@ -9,7 +9,7 @@ Discord gateway ── RakimBot (bot.py) ── events/
                                          ├─ member_update  → saludo cuando termina la pantalla de reglas
                                          ├─ member_remove  → log de salida
                                          ├─ stats          → `/invitaciones`: entradas por invitación
-                                         ├─ members        → `/miembros`: miembros por país y por etapa (members.py)
+                                         ├─ members        → `/miembros`: miembros por país, etapa y notificaciones (members.py)
                                          ├─ status         → `/estado`: permisos, canales e invitaciones
                                          ├─ roulette       → `/ruleta`: un tema al azar (roulette.py)
                                          ├─ daily_topic    → el tema del día en general y `/tema` (daily_topic.py) ── state.py
@@ -64,15 +64,15 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 
 **Límites**: con la invitación vanity, flujos de OAuth o dos entradas casi simultáneas puede no determinarse; las entradas con el bot apagado no se registran; el log no distingue salida voluntaria, expulsión y ban.
 
-## Miembros por país y por etapa
+## Miembros por país, etapa y notificaciones
 
-`@Rakim miembros` o `/miembros` (módulo `members`) cuenta a los miembros actuales según los roles de las preguntas del Onboarding: país (`COUNTRY_ROLE_IDS`, pregunta opcional) y etapa (`STAGE_ROLE_IDS`, obligatoria). Responde un embed con una tabla de barras por cada uno, de mayor a menor, con los roles en 0 y una fila «Sin responder» (quien saltó la pregunta o entró antes de que existiera). El porcentaje es sobre el total de miembros contados, no sobre la suma de filas, por si alguien tuviera dos roles. No cuenta bots ni a quien aún no acepta las reglas (`pending`). El nombre de cada fila es el del rol en Discord.
+`@Rakim miembros` o `/miembros` (módulo `members`) cuenta a los miembros actuales según los roles de las preguntas del Onboarding: país (`COUNTRY_ROLE_IDS`, pregunta opcional) y etapa (`STAGE_ROLE_IDS`, obligatoria) y notificaciones (`NOTIFICATION_ROLE_IDS`: Avisos, Eventos y Actividades; opcional y de selección múltiple). Responde un embed con una tabla de barras por cada uno, de mayor a menor, con los roles en 0 y una fila para quien no tiene ninguno: «Sin responder» (quien saltó la pregunta o entró antes de que existiera) o, en notificaciones, «Ninguna». El porcentaje es sobre el total de miembros contados, no sobre la suma de filas: en notificaciones alguien puede tener varios roles y las filas pueden sumar más que el total (el título de la sección lo aclara). No cuenta bots ni a quien aún no acepta las reglas (`pending`). El nombre de cada fila es el del rol en Discord.
 
 Lee la lista de miembros que el intent `members` ya mantiene en memoria: no hace llamadas a la API ni pide permisos nuevos, y no guarda historial. Mismas restricciones que `/invitaciones` (canal de logs o de bump, Gestionar servidor). Es un comando aparte de `/invitaciones` porque cuentan cosas distintas: miembros actuales frente al acumulado de Discord. Una sección sin roles configurados dice «Sin configurar»; un ID que no existe se omite y lo señalan la comprobación inicial y `/estado`. El cálculo (`members.py`) se prueba sin Discord.
 
 ## Estado y comprobación inicial
 
-`health.py` revisa, sin hablar con Discord, lo que Rakim necesita: el permiso Gestionar servidor; en cada canal configurado, ver el canal y, donde escribe, enviar mensajes e insertar enlaces; que cada rol de `COUNTRY_ROLE_IDS` y `STAGE_ROLE_IDS` exista, y que cada código de `INVITE_LABELS` coincida con una invitación existente (un código mal escrito es el fallo más fácil de pasar por alto). Se usa en dos sitios:
+`health.py` revisa, sin hablar con Discord, lo que Rakim necesita: el permiso Gestionar servidor; en cada canal configurado, ver el canal y, donde escribe, enviar mensajes e insertar enlaces; que cada rol de `COUNTRY_ROLE_IDS`, `STAGE_ROLE_IDS` y `NOTIFICATION_ROLE_IDS` exista, y que cada código de `INVITE_LABELS` coincida con una invitación existente (un código mal escrito es el fallo más fácil de pasar por alto). Se usa en dos sitios:
 
 - **Al arrancar** (`ready`): si algo falla, lo registra en el log y publica el resultado en el canal de logs. Si todo está en orden, solo una línea en el log.
 - **`/estado`** (o `@Rakim estado`): la misma comprobación con datos frescos, más la latencia, desde cuándo está activo y el próximo bump. Mismas restricciones que `/invitaciones`; con `/` la respuesta es efímera.
@@ -83,7 +83,7 @@ Lee la lista de miembros que el intent `members` ya mantiene en memoria: no hace
 
 ## Tema del día
 
-`daily_topic.py` y el módulo `events/daily_topic`. A las horas de `DAILY_TOPIC_TIMES` (de Lima, UTC-5 fijo: Perú no tiene horario de verano; en la comunidad, una vez al día a las 18:00), Rakim publica en el canal general (`WELCOME_CHANNEL_ID`) una línea con la mención al rol de `DAILY_TOPIC_ROLE_ID` (si existe) y el tema en el embed amarillo de la ruleta, con el grupo en el pie. Los temas salen de los grupos de `DAILY_TOPIC_PRESETS` (por defecto Empleabilidad, Rompehielos y Día a día: 36 temas).
+`daily_topic.py` y el módulo `events/daily_topic`. A las horas de `DAILY_TOPIC_TIMES` (de Lima, UTC-5 fijo: Perú no tiene horario de verano; en la comunidad, una vez al día a las 18:00), Rakim publica en el canal general (`WELCOME_CHANNEL_ID`) una línea con la mención al rol de `DAILY_TOPIC_ROLE_ID` (si existe) y el tema como título de un embed amarillo, con el grupo en el pie (el título no repite «Tema del día», que ya dice la línea). Los temas salen de los grupos de `DAILY_TOPIC_PRESETS` (por defecto Empleabilidad, Rompehielos y Día a día: 36 temas).
 
 - **Ciclo propio**: no repite un tema hasta haber usado todos, y al empezar otra vuelta no repite el último. Es independiente de `/ruleta`. Los temas usados se guardan por texto en el estado, así que sobreviven a un reinicio; al copiar un `roulette.json` nuevo, los temas nuevos entran al ciclo y los borrados se olvidan.
 - **A mano con `/tema`** (o `@Rakim tema`): publica ya el siguiente tema del mismo ciclo. Mismas restricciones que `/estado` (canal de logs o de bump, Gestionar servidor); el tema sale en el general y, con `/`, la confirmación es efímera. No reemplaza ni mueve el automático: solo gasta un tema, y el de la hora programada trae otro. Un candado evita que, si coinciden, los dos elijan el mismo tema. Funciona aunque `DAILY_TOPIC_TIMES` esté vacío.

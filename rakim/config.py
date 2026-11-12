@@ -55,10 +55,11 @@ class Settings(BaseSettings):
     # Roles de las preguntas del Onboarding para `/miembros`: IDs separados por coma.
     country_role_ids: str = ""
     stage_role_ids: str = ""
+    notification_role_ids: str = ""  # Avisos, Eventos y Actividades
 
     state_path: str = "data/state.json"
 
-    @field_validator("country_role_ids", "stage_role_ids")
+    @field_validator("country_role_ids", "stage_role_ids", "notification_role_ids")
     @classmethod
     def _valid_role_ids(cls, value: str) -> str:
         parse_ids(value)
@@ -95,6 +96,10 @@ class Settings(BaseSettings):
     @property
     def stage_roles(self) -> list[int]:
         return parse_ids(self.stage_role_ids)
+
+    @property
+    def notification_roles(self) -> list[int]:
+        return parse_ids(self.notification_role_ids)
 
 
 def parse_ids(text: str) -> list[int]:

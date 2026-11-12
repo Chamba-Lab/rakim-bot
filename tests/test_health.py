@@ -22,10 +22,13 @@ def guild(channels, manage=True, roles=None):
     )
 
 
-def settings(labels=None, topic_times=(), topic_role=None, countries=(), stages=()):
+def settings(
+    labels=None, topic_times=(), topic_role=None, countries=(), stages=(), notices=()
+):
     return SimpleNamespace(
         country_roles=list(countries),
         stage_roles=list(stages),
+        notification_roles=list(notices),
         topic_times=list(topic_times),
         daily_topic_role_id=topic_role,
         log_channel_id=1,
@@ -142,11 +145,12 @@ def test_no_role_check_when_the_daily_topic_is_off():
 
 def test_flags_member_roles_that_do_not_exist():
     roles = {10: SimpleNamespace(mentionable=False)}
-    s = settings(countries=[10, 11], stages=[10])
+    s = settings(countries=[10, 11], stages=[10], notices=[12])
     checks = by_name(check_setup(guild(healthy_channels(), roles=roles), s, {}))
     assert not checks["Roles de país"].ok
     assert checks["Roles de país"].detail == "1 de 2; no existen: 11"
     assert checks["Roles de etapa"].ok
+    assert checks["Roles de notificación"].detail == "0 de 1; no existen: 12"
 
 
 def test_no_member_role_checks_when_not_configured():
