@@ -28,3 +28,12 @@ def test_no_members():
     result = breakdown([], [PERU])
     assert result.rows == [(PERU, 0)]
     assert result.total == 0
+
+
+def test_multiple_choice_rows_can_add_up_to_more_than_the_total():
+    AVISOS, EVENTOS, ACTIVIDADES = 4, 5, 6
+    members = [{AVISOS, EVENTOS, ACTIVIDADES}, {ACTIVIDADES}, set()]
+    result = breakdown(members, [AVISOS, EVENTOS, ACTIVIDADES])
+    assert result.rows == [(ACTIVIDADES, 2), (AVISOS, 1), (EVENTOS, 1)]
+    assert sum(n for _, n in result.rows) > result.total
+    assert result.unanswered == 1

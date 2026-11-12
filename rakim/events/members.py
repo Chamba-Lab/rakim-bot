@@ -13,7 +13,7 @@ async def setup(bot: RakimBot) -> None:
     @commands.hybrid_command(
         name="miembros",
         aliases=["members"],
-        description="Miembros por país y por etapa, según el Onboarding",
+        description="Miembros por país, etapa y notificaciones, según el Onboarding",
     )
     @app_commands.default_permissions(manage_guild=True)
     @app_commands.guild_only()
@@ -40,9 +40,18 @@ def members_embed(guild: discord.Guild, bot: RakimBot) -> discord.Embed:
         {r.id for r in m.roles} for m in guild.members if not m.bot and not m.pending
     ]
     sections: list[tuple[str, list[tuple[str, int]] | None]] = []
-    for title, role_ids in (
-        ("Por país", bot.settings.country_roles),
-        ("Por etapa", bot.settings.stage_roles),
+    s = bot.settings
+    # (título, roles, cómo se llama a quien no tiene ninguno)
+    for title, role_ids, none_label in (
+        ("Por país", s.country_roles, "Sin responder"),
+        ("Por etapa", s.stage_roles, "Sin responder"),
+        # Selección múltiple: alguien puede tener varios, así que las filas pueden sumar
+        # más que el total. Quien ya estaba antes de la pregunta no la recibe.
+        (
+            "Notificaciones (se puede elegir más de una)",
+            s.notification_roles,
+            "Ninguna",
+        ),
     ):
         # Un rol borrado no se muestra; la comprobación inicial y `/estado` lo señalan.
         existing = [r for r in role_ids if guild.get_role(r) is not None]
@@ -51,7 +60,7 @@ def members_embed(guild: discord.Guild, bot: RakimBot) -> discord.Embed:
             continue
         result = breakdown(counted, existing)
         rows = [(_role_name(guild, r), n) for r, n in result.rows]
-        rows.append(("Sin responder", result.unanswered))
+        rows.append((none_label, result.unanswered))
         sections.append((title, rows))
     return messages.members_embed(sections, len(counted))
 

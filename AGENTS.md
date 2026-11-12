@@ -14,7 +14,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 - **Tema del día**: una vez al día (18:00 de Lima) publica en el canal general un tema de la ruleta y menciona al rol de Actividades (opcional). Lleva su propio ciclo, aparte de `ruleta`, y no repite hasta haber usado todos. Se apaga dejando vacío `DAILY_TOPIC_TIMES`.
 - **Comandos** (híbridos: `/comando` y `@Rakim comando`):
     - `invitaciones` (`todas`): entradas por invitación registrada. Solo en el canal de logs o el de bump, para quien gestiona el servidor.
-    - `miembros`: miembros actuales por país y por etapa, según los roles del Onboarding (sin bots ni pendientes de aceptar las reglas). Mismas restricciones.
+    - `miembros`: miembros actuales por país, etapa y notificaciones (Avisos, Eventos, Actividades), según los roles del Onboarding (sin bots ni pendientes de aceptar las reglas). Mismas restricciones.
     - `estado`: permisos, canales e invitaciones comprobados, latencia y próximo bump. Mismas restricciones; con `/` la respuesta es efímera.
     - `ruleta` (`tema`): un tema de conversación al azar. En cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal.
     - `tema`: publica ya un tema del día en el canal general, del mismo ciclo que el automático (gasta un tema; no reemplaza ni mueve el programado). Mismas restricciones que `estado`; con `/` la confirmación es efímera. Funciona aunque el automático esté apagado.

@@ -86,6 +86,7 @@ def check_setup(
     for name, role_ids in (
         ("Roles de país", settings.country_roles),
         ("Roles de etapa", settings.stage_roles),
+        ("Roles de notificación", settings.notification_roles),
     ):
         if role_ids:
             missing = [str(r) for r in role_ids if guild.get_role(r) is None]
