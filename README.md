@@ -7,7 +7,7 @@ El bot de Discord de [Chamba Lab](https://chambalab.org), una comunidad tech par
 1. **Da la bienvenida.** Cuando alguien termina la pantalla de reglas, Rakim lo saluda en el canal general con primeros pasos y qué ofrece el servidor.
 2. **Registra entradas y salidas.** En un canal privado publica quién entró o salió, con la invitación usada, la antigüedad de la cuenta y los roles.
 3. **Recuerda el bump.** Detecta el bump de Disboard y avisa cuando pasan las 2 horas de enfriamiento. No ejecuta `/bump`: un bot no puede invocar los comandos de otro.
-4. **Lanza el tema del día.** Una vez al día (18:00 de Lima) publica en el canal general un tema de conversación y menciona al rol de Actividades. No repite un tema hasta haber usado todos.
+4. **Lanza el tema del día.** Una vez al día (12:00 de Lima) publica en el canal general un tema de conversación y menciona al rol de Actividades. No repite un tema hasta haber usado todos.
 
 Y estos comandos (con `/` o mencionando a Rakim):
 
@@ -17,7 +17,7 @@ Y estos comandos (con `/` o mencionando a Rakim):
 | `/miembros`    | Quien gestiona el servidor, en logs o bump     | Cuántos eligieron cada opción del Onboarding (`todos` agrega cada rol) |
 | `/estado`      | Quien gestiona el servidor, en logs o bump     | Permisos, canales e invitaciones comprobados, latencia y bump   |
 | `/ruleta`      | Cualquiera, en cualquier canal                 | Un tema de conversación al azar (`tema` elige el grupo)         |
-| `/tema`        | Quien gestiona el servidor, en logs o bump     | Publica ya un tema del día en el general (no mueve el de las 18:00) |
+| `/tema`        | Quien gestiona el servidor, en logs o bump     | Publica ya un tema del día en el general (no mueve el de las 12:00) |
 
 Al arrancar, Rakim también comprueba sus permisos y canales y avisa en el canal de logs de lo que falte.
 

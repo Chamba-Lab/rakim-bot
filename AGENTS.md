@@ -11,7 +11,7 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
     1. **Bienvenida**: saluda en el canal general a quien termina la pantalla de reglas del Onboarding.
     2. **Log de entradas y salidas**: un embed en un canal privado, con la invitación usada.
     3. **Recordatorio de bump**: detecta el bump de Disboard y avisa a las 2 horas. **No ejecuta `/bump`**: un bot no puede invocar los comandos de otro, y hacerlo con una cuenta de usuario incumple los términos de Discord.
-- **Tema del día**: una vez al día (18:00 de Lima) publica en el canal general un tema de la ruleta y menciona al rol de Actividades (opcional). Lleva su propio ciclo, aparte de `ruleta`, y no repite hasta haber usado todos. Se apaga dejando vacío `DAILY_TOPIC_TIMES`.
+- **Tema del día**: una vez al día (12:00 de Lima) publica en el canal general un tema de la ruleta y menciona al rol de Actividades (opcional). Lleva su propio ciclo, aparte de `ruleta`, y no repite hasta haber usado todos. Se apaga dejando vacío `DAILY_TOPIC_TIMES`.
 - **Comandos** (híbridos: `/comando` y `@Rakim comando`):
     - `invitaciones` (`todas`): entradas por invitación registrada. Solo en el canal de logs o el de bump, para quien gestiona el servidor.
     - `miembros` (`todos`): cuántos miembros actuales eligieron cada opción de cada pregunta del Onboarding, que lee de Discord en cada uso (sin configuración); `todos` agrega cuántos tiene cada rol. Sin bots ni pendientes de aceptar las reglas. Mismas restricciones.
