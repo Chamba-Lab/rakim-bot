@@ -135,8 +135,8 @@ def test_daily_topic_embed_shows_the_topic_and_its_group():
     embed = messages.daily_topic_embed(
         "🧭 Día a día & Aprendizaje", "¿Qué estás aprendiendo?"
     )
-    assert embed.title == "Tema del día"
-    assert embed.description == "**¿Qué estás aprendiendo?**"
+    assert embed.title == "¿Qué estás aprendiendo?"
+    assert embed.description is None
     assert embed.footer.text == "🧭 Día a día & Aprendizaje · mañana hay otro"
 
 
@@ -148,3 +148,9 @@ def test_daily_topic_posted_confirms_the_channel_and_topic():
 
 def test_daily_topic_failed_points_to_the_status_command():
     assert "/estado" in messages.daily_topic_failed()
+
+
+def test_every_topic_fits_as_an_embed_title():
+    from rakim.roulette import load_presets
+
+    assert max(len(o) for p in load_presets() for o in p.options) <= 256
