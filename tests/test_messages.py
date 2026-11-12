@@ -148,3 +148,19 @@ def test_daily_topic_posted_confirms_the_channel_and_topic():
 
 def test_daily_topic_failed_points_to_the_status_command():
     assert "/estado" in messages.daily_topic_failed()
+
+
+def test_members_embed_uses_the_member_total_for_percentages():
+    rows = [("Colombia", 5), ("Perú", 4), ("Sin responder", 3)]
+    embed = messages.members_embed([("Por país", rows), ("Por etapa", None)], 12)
+    country, stage, total = embed.fields
+    assert country.name == "Por país"
+    assert "Colombia       ██████████     5   42%" in (country.value or "")
+    assert "Sin responder  ██████░░░░     3   25%" in (country.value or "")
+    assert stage.value == "Sin configurar."
+    assert total.value == "12"
+
+
+def test_members_embed_with_nobody_yet():
+    embed = messages.members_embed([("Por país", [("Perú", 0)])], 0)
+    assert "Perú  ░░░░░░░░░░     0    0%" in (embed.fields[0].value or "")

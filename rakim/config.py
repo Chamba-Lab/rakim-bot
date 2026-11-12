@@ -52,7 +52,17 @@ class Settings(BaseSettings):
     daily_topic_role_id: Snowflake | None = None
     daily_topic_presets: str = "employability,icebreaker-culture,daily-learning"
 
+    # Roles de las preguntas del Onboarding para `/miembros`: IDs separados por coma.
+    country_role_ids: str = ""
+    stage_role_ids: str = ""
+
     state_path: str = "data/state.json"
+
+    @field_validator("country_role_ids", "stage_role_ids")
+    @classmethod
+    def _valid_role_ids(cls, value: str) -> str:
+        parse_ids(value)
+        return value
 
     @field_validator("daily_topic_times")
     @classmethod
@@ -77,3 +87,21 @@ class Settings(BaseSettings):
     @property
     def topic_preset_ids(self) -> list[str]:
         return split_list(self.daily_topic_presets)
+
+    @property
+    def country_roles(self) -> list[int]:
+        return parse_ids(self.country_role_ids)
+
+    @property
+    def stage_roles(self) -> list[int]:
+        return parse_ids(self.stage_role_ids)
+
+
+def parse_ids(text: str) -> list[int]:
+    """«123, 456» → IDs de Discord. Falla si alguno no lo parece."""
+    ids = []
+    for part in split_list(text):
+        if not part.isdigit() or not 10**16 <= int(part) < 10**20:
+            raise ValueError(f"ID de Discord no válido: {part!r}")
+        ids.append(int(part))
+    return ids
