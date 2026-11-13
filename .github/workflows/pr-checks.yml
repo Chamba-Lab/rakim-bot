@@ -1,6 +1,7 @@
 name: PR Checks
 
-# Lint, tipos, pruebas y construcción de la imagen corren al abrir el PR o al subir commits.
+# Lint, tipos y pruebas corren al abrir el PR o al subir commits. La imagen de Docker se
+# construye en docker-build.yml, solo cuando cambia algo que puede romperla.
 # El título se valida en pr-title.yml, que además escucha las ediciones: así editar
 # la descripción o el título no relanza todo.
 
@@ -55,19 +56,6 @@ jobs:
 
             - name: Test
               run: uv run pytest
-
-    # Comprueba que la imagen que se desplegará se construye; no la publica.
-    docker:
-        name: Docker build
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  persist-credentials: false
-
-            - name: Build image
-              run: docker build --pull --tag rakim-bot:ci .
 
     # Solo avisa: no es un check obligatorio y nunca falla, porque a veces hay
     # alertas sin parche upstream que no deben frenar un PR.

@@ -49,6 +49,7 @@ Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas 
 - **Intents**: `guilds`, `members` (privilegiado), `guild_messages` y `message_content` (privilegiado). Se pide solo lo necesario; por qué y qué se descartó: [`docs/architecture.md`](./docs/architecture.md#intents).
 - **Errores**: `discord.py` registra el fallo de un evento sin tumbar el proceso; no los tragues en silencio.
 - **Simple ante todo**: antes de agregar una capa, una clase o una dependencia, pregunta si el código corto lo resuelve.
+- **Solo funciones esenciales**: el bot corre en un servidor pequeño. Una función nueva se propone antes de programarla (ver [CONTRIBUTING.md](./CONTRIBUTING.md#antes-de-proponer-una-función-nueva)).
 
 ## 5. Reglas de trabajo (personas y agentes)
 
@@ -62,10 +63,10 @@ Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas 
 
 ## 6. CI/CD
 
-GitHub Actions (`.github/workflows/`): `pr-checks.yml` (`Lint & Test` y `Docker build`, obligatorios; `Dependency audit`, solo avisa), `pr-title.yml` (`PR title (Conventional Commits)`, obligatorio) y `deploy.yml` (**apagado por defecto**: solo corre si la variable de GitHub `DEPLOY_ENABLED` vale `true`; al fusionar en `master`, salvo cambios solo de documentación, valida, construye la imagen, la envía por SSH al Droplet y falla en rojo si el bot no queda corriendo). Las acciones van fijadas por SHA, como en `Chamba-Lab/home`. Dependabot: `uv` (semanal), acciones y Docker (mensual). Detalle y puesta en marcha: [`docs/deployment.md`](./docs/deployment.md).
+GitHub Actions (`.github/workflows/`): `pr-checks.yml` (`Lint & Test`, el único obligatorio; `Dependency audit`, solo avisa), `docker-build.yml` (`Docker build`, solo cuando cambian `Dockerfile`, `.dockerignore`, `pyproject.toml` o `uv.lock`), `pr-title.yml` (`PR title (Conventional Commits)`, aviso) y `deploy.yml` (**apagado por defecto**: solo corre si la variable de GitHub `DEPLOY_ENABLED` vale `true`; al fusionar en `master`, salvo cambios solo de documentación, valida, construye la imagen, la envía por SSH al Droplet y falla en rojo si el bot no queda corriendo). Las acciones van fijadas por SHA, como en `Chamba-Lab/home`. Dependabot: `uv` (semanal), acciones y Docker (mensual). Detalle y puesta en marcha: [`docs/deployment.md`](./docs/deployment.md).
 
 ## 7. Documentos
 
-[README.md](./README.md) · [CONTRIBUTING.md](./CONTRIBUTING.md) · [docs/architecture.md](./docs/architecture.md) (cómo funciona, intents, permisos) · [docs/setup.md](./docs/setup.md) (crear el bot, probar, diagnosticar) · [docs/deployment.md](./docs/deployment.md) (DigitalOcean) · [docs/decisions.md](./docs/decisions.md)
+[README.md](./README.md) · [CONTRIBUTING.md](./CONTRIBUTING.md) · [docs/architecture.md](./docs/architecture.md) (cómo funciona, intents, permisos) · [docs/setup.md](./docs/setup.md) (crear el bot, probar, diagnosticar) · [docs/deployment.md](./docs/deployment.md) (DigitalOcean) · [docs/decisions.md](./docs/decisions.md) · [LICENSE](./LICENSE) (MIT) · [NOTICE.md](./NOTICE.md) (marca y personaje)
 
 Comunidad: [Discord](https://chambalab.org/discord) · Sitio: [`Chamba-Lab/home`](https://github.com/Chamba-Lab/home).

@@ -99,4 +99,4 @@ tests/
 
 [AGENTS.md](./AGENTS.md) (fuente de verdad del repo) · [CONTRIBUTING.md](./CONTRIBUTING.md) · [docs/architecture.md](./docs/architecture.md) · [docs/setup.md](./docs/setup.md) · [docs/deployment.md](./docs/deployment.md) · [docs/decisions.md](./docs/decisions.md)
 
-El repositorio es privado y aún no tiene licencia definida.
+Código bajo [licencia MIT](./LICENSE). Rakim, sus personajes y la marca Chamba Lab no entran en esa licencia: [NOTICE.md](./NOTICE.md).

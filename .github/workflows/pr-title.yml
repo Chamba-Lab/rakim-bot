@@ -1,8 +1,8 @@
 name: PR title
 
 # Solo el título: escucha también `edited` (cambios de título o descripción) sin
-# relanzar lint, tests ni build. El job conserva su nombre porque es un check
-# obligatorio de la protección de master.
+# relanzar lint, tests ni build. Es un aviso, no un check obligatorio: sin releases ni
+# changelog, quien fusiona puede corregir el mensaje del squash.
 on:
     pull_request:
         branches:
