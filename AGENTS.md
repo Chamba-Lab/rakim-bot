@@ -63,7 +63,7 @@ Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas 
 
 ## 6. CI/CD
 
-GitHub Actions (`.github/workflows/`): `pr-checks.yml` (`Lint & Test` y `Docker build`, obligatorios; `Dependency audit`, solo avisa), `pr-title.yml` (`PR title (Conventional Commits)`, obligatorio) y `deploy.yml` (**apagado por defecto**: solo corre si la variable de GitHub `DEPLOY_ENABLED` vale `true`; al fusionar en `master`, salvo cambios solo de documentación, valida, construye la imagen, la envía por SSH al Droplet y falla en rojo si el bot no queda corriendo). Las acciones van fijadas por SHA, como en `Chamba-Lab/home`. Dependabot: `uv` (semanal), acciones y Docker (mensual). Detalle y puesta en marcha: [`docs/deployment.md`](./docs/deployment.md).
+GitHub Actions (`.github/workflows/`): `pr-checks.yml` (`Lint & Test`, el único obligatorio; `Dependency audit`, solo avisa), `docker-build.yml` (`Docker build`, solo cuando cambian `Dockerfile`, `.dockerignore`, `pyproject.toml` o `uv.lock`), `pr-title.yml` (`PR title (Conventional Commits)`, aviso) y `deploy.yml` (**apagado por defecto**: solo corre si la variable de GitHub `DEPLOY_ENABLED` vale `true`; al fusionar en `master`, salvo cambios solo de documentación, valida, construye la imagen, la envía por SSH al Droplet y falla en rojo si el bot no queda corriendo). Las acciones van fijadas por SHA, como en `Chamba-Lab/home`. Dependabot: `uv` (semanal), acciones y Docker (mensual). Detalle y puesta en marcha: [`docs/deployment.md`](./docs/deployment.md).
 
 ## 7. Documentos
 

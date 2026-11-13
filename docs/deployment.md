@@ -124,11 +124,11 @@ docker stats --no-stream rakim-bot      # memoria usada
 
 Que nadie pueda desplegar sin pasar por un PR: en **Settings > Rules** (o ramas protegidas), sobre `master`:
 
-- Exigir Pull Request antes de fusionar.
-- Exigir los checks: `Lint & Test`, `Docker build` y `PR title (Conventional Commits)`.
-- Bloquear el push directo.
+- Exigir Pull Request antes de fusionar, con una aprobación del equipo admins y solo squash.
+- Exigir el check `Lint & Test`. Al activar el despliegue, sumar `Docker build` (y quitar el filtro de rutas de `docker-build.yml`, para que corra en todos los PRs).
+- Bloquear el push directo, el force push y el borrado de la rama.
 
-Depende del plan de la organización: los repos privados pueden requerir un plan de pago para estas reglas. Sin ellas, la disciplina de "nunca push directo a `master`" de `AGENTS.md` es lo único que protege el despliegue.
+Con el repositorio público, el plan gratis de GitHub permite estas reglas (ruleset «Protect master»).
 
 ## 9. Seguridad
 

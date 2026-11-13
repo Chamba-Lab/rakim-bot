@@ -68,11 +68,11 @@ Solo las que un contribuidor o agente podría deshacer sin saberlo. Si cambias u
 
 - **Código abierto con licencia MIT y la marca reservada**, igual que `Chamba-Lab/home` y `Chamba-Lab/chambalab-skills`. MIT es la licencia más simple para que la comunidad contribuya y reutilice el código. `NOTICE.md` deja fuera a Rakim (nombre, imagen y voz) y la marca Chamba Lab, así nadie publica otro bot como si fuera Rakim. Se descartó una licencia copyleft (GPL o AGPL): el valor del repositorio es que la gente aprenda y aporte, no controlar versiones derivadas.
 - **Solo funciones esenciales.** El bot corre en un servidor pequeño; una función nueva se propone antes de programarla y se acepta si resuelve algo de la comunidad.
+- **Solo `Lint & Test` es obligatorio en los PRs.** Es lo que protege el código y tarda unos 16 s. `Docker build` corre solo cuando cambia algo que puede romper la imagen (`Dockerfile`, `.dockerignore`, `pyproject.toml`, `uv.lock`) y no es obligatorio mientras el despliegue esté apagado: hoy la imagen se construye en local. Se descartó apagarlo con `DEPLOY_ENABLED` porque una dependencia nueva podría romper la imagen local sin aviso. El título del PR es un aviso y no un check obligatorio: sin releases ni changelog, quien fusiona corrige el mensaje del squash si hace falta, y no se frena a quien abre su primer PR.
 - **Los logs del bot no se publican en Actions.** Con el repositorio público, los registros de los workflows son públicos: `Verify` solo muestra los logs del contenedor si el bot no quedó corriendo.
 
 ## Pendiente
 
 - Crear el Droplet y hacer el primer despliegue (`deployment.md`). El script del servidor y los workflows están escritos pero sin probar contra un servidor real.
-- Proteger `master` (`deployment.md`, sección 8): con el repositorio público, el plan gratis de GitHub ya lo permite.
 - Verificar en un servidor de pruebas: el comportamiento de `pending`, los permisos y que el saludo salga después del mensaje nativo (también con `WELCOME_WAIT_SYSTEM_MESSAGE=false`).
 - Texto final del mensaje de bienvenida.
