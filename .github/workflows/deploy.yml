@@ -118,5 +118,7 @@ jobs:
             - name: Verify
               run: |
                   sleep 20
-                  ssh rakim-server "cd $APP_DIR && docker compose ps && docker compose logs --tail 20 rakim"
-                  ssh rakim-server "cd $APP_DIR && docker compose ps --status running --quiet rakim | grep -q ."
+                  # Los logs del contenedor solo se muestran si falla: en un repo público, los registros de Actions son públicos.
+                  ssh rakim-server "cd $APP_DIR && docker compose ps"
+                  ssh rakim-server "cd $APP_DIR && docker compose ps --status running --quiet rakim | grep -q ." \
+                      || { ssh rakim-server "cd $APP_DIR && docker compose logs --tail 20 rakim"; exit 1; }

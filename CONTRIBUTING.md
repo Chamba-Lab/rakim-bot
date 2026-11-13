@@ -15,6 +15,10 @@ cp .env.example .env
 
 Para probar contra Discord necesitas un bot y un servidor de pruebas propios, no los de la comunidad: [`docs/setup.md`](./docs/setup.md). Las convenciones y la estructura están en [AGENTS.md](./AGENTS.md); léelo antes de tocar código.
 
+## Antes de proponer una función nueva
+
+Rakim corre en un servidor pequeño, con poca memoria y CPU. Por eso solo suma funciones esenciales para la comunidad, no funciones por agregar. Antes de programar algo nuevo, cuenta la idea en el hilo de Rakim Bot del canal de proyectos de [Discord](https://chambalab.org/discord) o en un issue: qué problema resuelve, a quién le sirve y si hay una forma más simple. Las correcciones, las pruebas y las mejoras de documentación no necesitan propuesta previa.
+
 ## Flujo de trabajo
 
 1. **Parte de `master` actualizada** y crea una rama con prefijo: `feat/welcome-copy`, `fix/invite-cache`, `docs/setup`, `chore/update-deps`.
@@ -39,3 +43,7 @@ Para probar contra Discord necesitas un bot y un servidor de pruebas propios, no
 - **Documentación al día** en el mismo PR.
 - **Textos de Rakim** con su voz: directos y cálidos, español neutro, tuteo, sin jerga local y un solo emoji como máximo.
 - **Sin secretos**: ni tokens ni IDs reales de producción en commits, issues o capturas.
+
+## Licencia
+
+Al contribuir aceptas que tu aporte se publique bajo la [licencia MIT](./LICENSE). Rakim y la marca Chamba Lab quedan fuera de esa licencia: [NOTICE.md](./NOTICE.md).

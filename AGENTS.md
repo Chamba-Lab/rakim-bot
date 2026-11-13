@@ -49,6 +49,7 @@ Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas 
 - **Intents**: `guilds`, `members` (privilegiado), `guild_messages` y `message_content` (privilegiado). Se pide solo lo necesario; por qué y qué se descartó: [`docs/architecture.md`](./docs/architecture.md#intents).
 - **Errores**: `discord.py` registra el fallo de un evento sin tumbar el proceso; no los tragues en silencio.
 - **Simple ante todo**: antes de agregar una capa, una clase o una dependencia, pregunta si el código corto lo resuelve.
+- **Solo funciones esenciales**: el bot corre en un servidor pequeño. Una función nueva se propone antes de programarla (ver [CONTRIBUTING.md](./CONTRIBUTING.md#antes-de-proponer-una-función-nueva)).
 
 ## 5. Reglas de trabajo (personas y agentes)
 
@@ -66,6 +67,6 @@ GitHub Actions (`.github/workflows/`): `pr-checks.yml` (`Lint & Test` y `Docker 
 
 ## 7. Documentos
 
-[README.md](./README.md) · [CONTRIBUTING.md](./CONTRIBUTING.md) · [docs/architecture.md](./docs/architecture.md) (cómo funciona, intents, permisos) · [docs/setup.md](./docs/setup.md) (crear el bot, probar, diagnosticar) · [docs/deployment.md](./docs/deployment.md) (DigitalOcean) · [docs/decisions.md](./docs/decisions.md)
+[README.md](./README.md) · [CONTRIBUTING.md](./CONTRIBUTING.md) · [docs/architecture.md](./docs/architecture.md) (cómo funciona, intents, permisos) · [docs/setup.md](./docs/setup.md) (crear el bot, probar, diagnosticar) · [docs/deployment.md](./docs/deployment.md) (DigitalOcean) · [docs/decisions.md](./docs/decisions.md) · [LICENSE](./LICENSE) (MIT) · [NOTICE.md](./NOTICE.md) (marca y personaje)
 
 Comunidad: [Discord](https://chambalab.org/discord) · Sitio: [`Chamba-Lab/home`](https://github.com/Chamba-Lab/home).
