@@ -61,15 +61,47 @@ async def greet(bot: RakimBot, member: discord.Member) -> None:
     """Saluda a un miembro nuevo en el canal general."""
     if member.bot or member.id in bot.welcomed:
         return
-    bot.welcomed[member.id] = None
+    await send_welcome(bot, [member])
+
+
+def sort_for_manual(
+    bot: RakimBot, members: list[discord.Member]
+) -> tuple[list[discord.Member], list[discord.Member], list[discord.Member]]:
+    """Separa a quienes nombró el equipo en `/saludar`: (a saludar, pendientes, ya saludados).
+
+    Los pendientes aún no aceptan las reglas: no pueden escribir, y el saludo
+    automático les llegará al aceptarlas. Los bots se descartan y los repetidos cuentan una vez.
+    """
+    greet_now: list[discord.Member] = []
+    pending: list[discord.Member] = []
+    already: list[discord.Member] = []
+    seen: set[int] = set()
+    for member in members:
+        if member.bot or member.id in seen:
+            continue
+        seen.add(member.id)
+        if member.pending:
+            pending.append(member)
+        elif member.id in bot.welcomed:
+            already.append(member)
+        else:
+            greet_now.append(member)
+    return greet_now, pending, already
+
+
+async def send_welcome(bot: RakimBot, members: list[discord.Member]) -> None:
+    """Publica un saludo en el canal general que menciona solo a estas personas."""
+    for member in members:
+        bot.welcomed[member.id] = None
     while len(bot.welcomed) > MAX_WELCOMED:  # sale el más antiguo
         del bot.welcomed[next(iter(bot.welcomed))]
     try:
         await bot.send(
             bot.settings.welcome_channel_id,
-            content=messages.welcome(member.id, bot.settings),
-            allowed_mentions=discord.AllowedMentions(users=[member]),
+            content=messages.welcome([m.id for m in members], bot.settings),
+            allowed_mentions=discord.AllowedMentions(users=members),
         )
     except Exception:
-        bot.welcomed.pop(member.id, None)  # permite reintentar si el envío falló
+        for member in members:  # permite reintentar si el envío falló
+            bot.welcomed.pop(member.id, None)
         raise

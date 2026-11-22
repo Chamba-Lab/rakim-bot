@@ -1,6 +1,8 @@
 import asyncio
 from types import SimpleNamespace
 
+import pytest
+
 from rakim import welcome
 
 
@@ -127,3 +129,39 @@ def test_does_not_keep_system_messages_nobody_waits_for():
     bot, _ = fake_bot(wait_system_message=False)
     welcome.system_message_arrived(bot, 10)
     assert bot.system_messages == {}
+
+
+def named(member_id, bot=False, pending=False):
+    return SimpleNamespace(id=member_id, bot=bot, pending=pending)
+
+
+def test_manual_greeting_skips_bots_pending_repeated_and_already_greeted():
+    bot, _ = fake_bot(wait_system_message=False)
+    bot.welcomed[4] = None
+    greet_now, pending, already = welcome.sort_for_manual(
+        bot,
+        [named(1), named(1), named(2, bot=True), named(3, pending=True), named(4)],
+    )
+    assert [m.id for m in greet_now] == [1]
+    assert [m.id for m in pending] == [3]
+    assert [m.id for m in already] == [4]
+
+
+def test_manual_greeting_sends_one_message_for_everyone():
+    bot, sent = fake_bot(wait_system_message=False)
+    asyncio.run(welcome.send_welcome(bot, [named(1), named(2)]))
+    assert len(sent) == 1
+    assert "<@1> y <@2>" in sent[0]
+    assert list(bot.welcomed) == [1, 2]
+
+
+def test_failed_manual_greeting_can_be_retried():
+    bot, _ = fake_bot(wait_system_message=False)
+
+    async def fail(channel_id, **kwargs):
+        raise RuntimeError("sin permisos")
+
+    bot.send = fail
+    with pytest.raises(RuntimeError):
+        asyncio.run(welcome.send_welcome(bot, [named(1), named(2)]))
+    assert bot.welcomed == {}

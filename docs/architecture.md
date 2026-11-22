@@ -13,6 +13,7 @@ Discord gateway ── RakimBot (bot.py) ── events/
                                          ├─ status         → `/estado`: permisos, canales e invitaciones
                                          ├─ roulette       → `/ruleta`: un tema al azar (roulette.py)
                                          ├─ daily_topic    → el tema del día en general y `/tema` (daily_topic.py) ── state.py
+                                         ├─ greet          → `/saludar`: el saludo a mano (welcome.py)
                                          ├─ command_error  → registra los fallos de comandos
                                          └─ message        → detecta el bump (bump.py) ── state.py
                                                             y el mensaje nativo de entrada (welcome.py)
@@ -53,6 +54,8 @@ El canal de logs es privado: el rol de Rakim necesita acceso explícito. Si hay 
 `welcome.py`, desde `member_join` y `member_update`. Mientras la persona no acepta las reglas, Discord la marca `pending`; al aceptarlas llega un `member_update` con `pending` pasando de `True` a `False`, y ese es el momento del saludo. Si el servidor no exige reglas, se saluda al entrar. Se ignoran los bots, y un conjunto en memoria evita el saludo doble. El mensaje menciona solo a la persona.
 
 **Orden con el mensaje nativo.** Discord publica su mensaje de entrada («X ha entrado») unos segundos después de `member_update`; si el bot saludara al instante, su saludo saldría antes y la mención podría no resolverse en el cliente de quien entra. Con `WELCOME_WAIT_SYSTEM_MESSAGE=true` (por defecto), `greet_in_order` espera ese mensaje (`MessageType.new_member` en el canal de `WELCOME_CHANNEL_ID`, que debe ser también el canal de mensajes del sistema del servidor) hasta 10 s y, tras él (o al vencer el plazo), deja una pausa de 2,5 s antes de saludar: así quien entra termina de cargar el servidor y la notificación le llega bien. Con `false` (mensajes nativos desactivados) no hay nada que esperar y se aplica una pausa fija de 5 s. El saludo es un mensaje normal, no una respuesta.
+
+**A mano con `/saludar`** (o `@Rakim saludar @persona …`): si Rakim estaba apagado cuando alguien aceptó las reglas, ese saludo no sale después (Discord no repite el `member_update`). El equipo nombra a quién saludar, hasta cinco personas (los comandos híbridos no admiten un número variable de argumentos), y sale un solo mensaje en el general que las menciona a todas; solo cambia la primera línea («¡Bienvenid@s, @a y @b!»). Se omiten los bots, a quien aún está `pending` (el saludo automático le llegará al aceptar) y a quien ya está en el conjunto de saludados; la confirmación dice a quién se saludó y por qué se omitió al resto, sin notificar a nadie. Mismas restricciones que `/estado`. Sin espera ni pausa: la persona ya está dentro y el mensaje nativo salió hace rato.
 
 ## Log de entradas y salidas
 

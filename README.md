@@ -18,6 +18,7 @@ Y estos comandos (con `/` o mencionando a Rakim):
 | `/estado`      | Quien gestiona el servidor, en logs o bump     | Permisos, canales e invitaciones comprobados, latencia y bump   |
 | `/ruleta`      | Cualquiera, en cualquier canal                 | Un tema de conversación al azar (`tema` elige el grupo)         |
 | `/tema`        | Quien gestiona el servidor, en logs o bump     | Publica ya un tema del día en el general (no mueve el de las 12:00) |
+| `/saludar`     | Quien gestiona el servidor, en logs o bump     | Da la bienvenida a quien se quedó sin saludo (hasta 5 personas) |
 
 Al arrancar, Rakim también comprueba sus permisos y canales y avisa en el canal de logs de lo que falte.
 
