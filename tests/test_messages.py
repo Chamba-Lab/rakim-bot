@@ -15,7 +15,7 @@ def invite(code="abc", uses=3, inviter_id=100000000000000001):
 
 
 def test_welcome_mentions_the_person_and_the_channels():
-    text = messages.welcome(999999999999999999, FakeSettings())
+    text = messages.welcome([999999999999999999], FakeSettings())
     assert "<@999999999999999999>" in text
     for channel in (
         111111111111111111,
@@ -26,13 +26,32 @@ def test_welcome_mentions_the_person_and_the_channels():
 
 
 def test_welcome_fits_in_a_discord_message():
-    assert len(messages.welcome(1, FakeSettings())) <= 2000
+    assert len(messages.welcome([1], FakeSettings())) <= 2000
 
 
 def test_welcome_uses_a_single_emoji():
-    text = messages.welcome(1, FakeSettings())
+    text = messages.welcome([1], FakeSettings())
     emojis = re.findall(r"[\U0001F300-\U0001FAFF☀-➿]", text)
     assert len(emojis) == 1
+
+
+def test_welcome_greets_several_people_in_one_line():
+    text = messages.welcome([1, 2, 3], FakeSettings())
+    assert text.startswith("¡Bienvenid@s, <@1>, <@2> y <@3>!")
+
+
+def test_manual_welcome_result_explains_who_was_skipped():
+    text = messages.manual_welcome_result([1], [2], [3, 4], 9)
+    assert text.splitlines() == [
+        "Listo, saludé a <@1> en <#9>.",
+        "Sin aceptar las reglas (el saludo sale solo al aceptarlas): <@2>.",
+        "Con saludo ya enviado: <@3> y <@4>.",
+    ]
+
+
+def test_manual_welcome_result_when_nobody_was_greeted():
+    text = messages.manual_welcome_result([], [], [3], 9)
+    assert text.startswith("No saludé a nadie.")
 
 
 def test_bump_reminder_mentions_the_role_when_configured():

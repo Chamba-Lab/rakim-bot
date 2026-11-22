@@ -23,10 +23,23 @@ NAME_WIDTH = 16
 BAR_WIDTH = 10
 
 
-def welcome(user_id: int, s: Settings) -> str:
-    """Borrador del mensaje de bienvenida (el texto final lo define el equipo)."""
+def mention_list(user_ids: list[int]) -> str:
+    """Menciones en una frase: «@a», «@a y @b», «@a, @b y @c»."""
+    mentions = [f"<@{i}>" for i in user_ids]
+    if len(mentions) == 1:
+        return mentions[0]
+    return ", ".join(mentions[:-1]) + " y " + mentions[-1]
+
+
+def welcome(user_ids: list[int], s: Settings) -> str:
+    """Borrador del mensaje de bienvenida (el texto final lo define el equipo).
+
+    Con varias personas (saludo a mano con `/saludar`) solo cambia la primera línea:
+    el resto sigue en tuteo, como si hablara a cada una.
+    """
+    greeting = "Bienvenid@" if len(user_ids) == 1 else "Bienvenid@s"
     return (
-        f"¡Bienvenid@, <@{user_id}>! Soy Rakim, la mascota de esta comunidad: un espacio "
+        f"¡{greeting}, {mention_list(user_ids)}! Soy Rakim, la mascota de esta comunidad: un espacio "
         "chill para conectar, inspirarte y crecer en el mundo tech.\n"
         "\n"
         f"- Cuéntanos de ti en <#{s.intro_channel_id}>: tu nombre, de dónde eres, en qué "
@@ -171,6 +184,28 @@ def daily_topic_posted(topic: str, channel_id: int) -> str:
 
 def daily_topic_failed() -> str:
     return "No pude publicar el tema. Revisa mis permisos con `/estado`."
+
+
+def manual_welcome_result(
+    greeted: list[int], pending: list[int], already: list[int], channel_id: int
+) -> str:
+    """Confirmación de `/saludar` para el equipo: a quién saludó y a quién no, y por qué."""
+    if greeted:
+        lines = [f"Listo, saludé a {mention_list(greeted)} en <#{channel_id}>."]
+    else:
+        lines = ["No saludé a nadie."]
+    if pending:
+        lines.append(
+            f"Sin aceptar las reglas (el saludo sale solo al aceptarlas): "
+            f"{mention_list(pending)}."
+        )
+    if already:
+        lines.append(f"Con saludo ya enviado: {mention_list(already)}.")
+    return "\n".join(lines)
+
+
+def manual_welcome_failed() -> str:
+    return "No pude enviar el saludo. Revisa mis permisos con `/estado`."
 
 
 def roulette_unknown(presets: list[Preset]) -> str:

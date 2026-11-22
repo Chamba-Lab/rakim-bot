@@ -26,6 +26,7 @@ EVENTS = [
     "status",
     "roulette",
     "daily_topic",
+    "greet",
     "command_error",
 ]
 
