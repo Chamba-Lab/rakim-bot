@@ -14,6 +14,7 @@ Discord gateway ── RakimBot (bot.py) ── events/
                                          ├─ roulette       → `/ruleta`: un tema al azar (roulette.py)
                                          ├─ daily_topic    → el tema del día en general y `/tema` (daily_topic.py) ── state.py
                                          ├─ greet          → `/saludar`: el saludo a mano (welcome.py)
+                                         ├─ profile        → `/perfil`: la tarjeta de miembro (profile.py)
                                          ├─ command_error  → registra los fallos de comandos
                                          └─ message        → detecta el bump (bump.py) ── state.py
                                                             y el mensaje nativo de entrada (welcome.py)
@@ -77,7 +78,19 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 - El porcentaje es sobre el total de miembros contados. No cuenta bots ni a quien aún no acepta las reglas (`pending`).
 - **`todos`** (`/miembros alcance:todos`) agrega una tabla con cuántos miembros tiene cada rol del servidor, sin @everyone ni los roles de bots.
 
-Además de leer el Onboarding, usa la lista de miembros que el intent `members` ya mantiene en memoria; no guarda historial. Mismas restricciones que `/invitaciones` (canal de logs o de bump, Gestionar servidor). Es un comando aparte de `/invitaciones` porque cuentan cosas distintas: miembros actuales frente al acumulado de Discord. El cálculo (`members.py`) se prueba sin Discord.
+Además de leer el Onboarding, usa la lista de miembros que el intent `members` ya mantiene en memoria; no guarda historial. Solo para quien tiene Gestionar servidor, en las dos formas, pero en cualquier canal y con respuesta pública: así se le muestran los números a quien pregunta («¿cuántos de Perú somos?») sin pasar capturas. Es un comando aparte de `/invitaciones` porque cuentan cosas distintas: miembros actuales frente al acumulado de Discord. El cálculo (`members.py`) se prueba sin Discord.
+
+## Perfil
+
+`profile.py` y el comando `/perfil [persona]` (o `@Rakim perfil @persona`). Muestra la tarjeta de miembro de quien lo pide o de la persona nombrada: un embed con su nombre, su avatar y el color de su rol más alto (sin color, el amarillo de la marca).
+
+- **Miembro #N**: el puesto por fecha de entrada entre las personas del servidor, sin bots y con quienes aún no aceptan las reglas (así el número no cambia cuando las aceptan). Discord no recuerda a quien salió: si sale alguien que entró antes, el número baja, y quien sale y vuelve pasa al final. El pie lo aclara («entre los N miembros de hoy»).
+- **En Chamba desde** y **Cuenta de Discord**: fecha y tiempo transcurrido con las marcas de tiempo de Discord, que cada quien ve en su hora.
+- **Respuestas al Onboarding**: un campo por pregunta respondida, titulado con la pregunta y con el rol propio de cada opción elegida, como en `/miembros` (se reutiliza su lectura del Onboarding, con el emoji de cada opción: «🌱 Early Career»). Si no se puede leer el Onboarding, la tarjeta sale sin ellas.
+- **Roles**: los demás, de mayor a menor, como menciones (se ven con su color y en un embed no notifican), hasta 12. Sin @everyone, los roles del Onboarding (tampoco Member) ni los de bots o integraciones; el de Booster sí.
+- **Fuera, a propósito**: la invitación usada (solo va en el log privado), el ID, la actividad o los mensajes (pedirían leer el historial o guardar contadores) y la presencia (otro intent privilegiado).
+
+Es pública, en cualquier canal y para cualquiera, con un enfriamiento de 30 s por persona (basta para ver cómo cambia la tarjeta tras cambiar un rol). Cada sección lleva su emoji (🏠, 🎂, 🏷️) y los tres primeros en llegar, una medalla en vez de 🏅: es la excepción a «un emoji por mensaje», porque la tarjeta no le habla a nadie, es una ficha para mirar. A un bot o a quien aún no acepta las reglas responde que no hay tarjeta, sin gastar el enfriamiento. Usa la lista de miembros que el intent `members` ya mantiene y `Guild.onboarding()`, que pide Gestionar servidor (el permiso que ya usa): sin intents ni permisos nuevos, sin estado. El cálculo se prueba sin Discord.
 
 ## Estado y comprobación inicial
 
