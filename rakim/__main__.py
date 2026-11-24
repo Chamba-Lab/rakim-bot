@@ -16,7 +16,10 @@ def main() -> None:
             for e in error.errors()
         )
         sys.exit(f"Configuración inválida:\n{problems}")
-    RakimBot(settings).run(settings.discord_token.get_secret_value())
+    # `root_logger` configura el logger raíz y no solo el de discord.py: sin él, los INFO
+    # de Rakim («conectado», «tema publicado», «bump detectado») no se ven. No llevan datos
+    # de miembros ni el token.
+    RakimBot(settings).run(settings.discord_token.get_secret_value(), root_logger=True)
 
 
 main()
