@@ -18,11 +18,12 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
     - `estado`: permisos, canales e invitaciones comprobados, latencia y próximo bump. Mismas restricciones; con `/` la respuesta es efímera.
     - `ruleta` (`tema`): un tema de conversación al azar. En cualquier canal y para cualquiera, con un enfriamiento de 15 s por canal.
     - `tema`: publica ya un tema del día en el canal general, del mismo ciclo que el automático (gasta un tema; no reemplaza ni mueve el programado). Mismas restricciones que `estado`; con `/` la confirmación es efímera. Funciona aunque el automático esté apagado.
+    - `perfil` (`persona`): la tarjeta de miembro de quien lo pide (o de otra persona): número de llegada entre los miembros actuales, desde cuándo está, antigüedad de la cuenta, respuestas al Onboarding y demás roles. Pública, en cualquier canal y para cualquiera, con un enfriamiento de 30 s por persona. Lleva un emoji por sección.
     - `saludar` (`persona`, hasta cinco): da la bienvenida en el canal general a quien se quedó sin saludo porque Rakim estaba apagado. Un solo mensaje para todas las personas nombradas; omite bots, a quien aún no acepta las reglas y a quien Rakim ya saludó desde que arrancó. Mismas restricciones que `estado`; con `/` la confirmación es efímera.
 - **Comprobación al arrancar**: Rakim revisa sus permisos y canales y avisa en el log (y en el canal de logs) de lo que falte.
 - Fuera de alcance: moderación avanzada, niveles o karma, gamificación, integración con Chamba Board, mensajes directos de bienvenida (parecen invasivos).
 
-**Voz de Rakim**: directa y cálida, con expresividad (un ¡! cuando toca); a veces gruñona, no siempre. Español neutro, tuteo, sin jerga local ("Chamba", el nombre, es la única excepción), frases cortas y como máximo un emoji por mensaje. Sin promesas de empleo. Hacia afuera se dice "equipo". Todo texto que escribe el bot vive en `rakim/messages.py`.
+**Voz de Rakim**: directa y cálida, con expresividad (un ¡! cuando toca); a veces gruñona, no siempre. Español neutro, tuteo, sin jerga local ("Chamba", el nombre, es la única excepción), frases cortas y como máximo un emoji por mensaje (la tarjeta de `perfil` es la excepción: no le habla a nadie, es una ficha para mirar). Sin promesas de empleo. Hacia afuera se dice "equipo". Todo texto que escribe el bot vive en `rakim/messages.py`.
 
 ## 2. Stack
 
@@ -33,10 +34,10 @@ Lo primero que lee cualquier persona o agente antes de tocar el proyecto: lo ese
 | Ruta               | Qué hay                                                                                    |
 | :----------------- | :----------------------------------------------------------------------------------------- |
 | `rakim/bot.py`     | El cliente: intents, estado y lo que comparten los eventos                                 |
-| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `command_error`), por comando (`stats`, `members`, `status`, `roulette`, `greet`) y por tarea programada (`daily_topic`) |
+| `rakim/events/`    | Un módulo por evento de Discord (`ready`, `member_join`, `member_update`, `member_remove`, `message`, `command_error`), por comando (`stats`, `members`, `status`, `roulette`, `greet`, `profile`) y por tarea programada (`daily_topic`) |
 | `rakim/config.py`  | Variables de entorno validadas con `pydantic-settings`                                     |
 | `rakim/messages.py`| Todo lo que Rakim escribe: textos y embeds                                                 |
-| `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py`, `health.py`, `roulette.py`, `daily_topic.py`, `members.py` | La lógica de cada función. `invites`, `bump`, `health`, `roulette`, `daily_topic` y `members` se prueban sin Discord. `roulette.json` son los temas de la ruleta (y del tema del día), copiados del sitio |
+| `rakim/invites.py`, `bump.py`, `state.py`, `welcome.py`, `health.py`, `roulette.py`, `daily_topic.py`, `members.py`, `profile.py` | La lógica de cada función. `invites`, `bump`, `health`, `roulette`, `daily_topic`, `members` y `profile` se prueban sin Discord. `roulette.json` son los temas de la ruleta (y del tema del día), copiados del sitio |
 | `tests/`           | Pruebas de la lógica con reglas                                                            |
 
 Cada módulo de `events/` define `async def setup(bot)` y registra sus escuchas con `@bot.listen()`; para sumar un evento se crea su módulo y se agrega a `EVENTS` en `bot.py`.

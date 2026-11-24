@@ -213,6 +213,59 @@ def roulette_unknown(presets: list[Preset]) -> str:
     return f"No conozco ese grupo. Prueba con: {names}."
 
 
+# Roles en la tarjeta de `/perfil`: más que esto ya no se lee de un vistazo.
+MAX_PROFILE_ROLES = 12
+# Los tres primeros en llegar (entre los actuales) llevan medalla.
+PODIUM = {1: "🥇", 2: "🥈", 3: "🥉"}
+
+
+def profile_embed(
+    member: discord.Member,
+    rank: int,
+    total: int,
+    answers: list[tuple[str, list[str]]],
+    other_roles: list[discord.Role],
+) -> discord.Embed:
+    """La tarjeta de miembro. Es la excepción a «un emoji por mensaje»: no le habla a
+    nadie, es una ficha para mirar, y un emoji por sección la hace legible de un vistazo."""
+    # El color de su rol más alto; sin rol con color, el amarillo de la marca.
+    color = member.color.value or YELLOW
+    embed = discord.Embed(
+        title=member.display_name,
+        description=f"{PODIUM.get(rank, '🏅')} Miembro **#{rank}** de Chamba Lab",
+        color=color,
+    )
+    embed.set_author(name="Tarjeta de miembro")
+    embed.set_thumbnail(url=member.display_avatar.url)
+    if member.joined_at:
+        embed.add_field(name="🏠 En Chamba desde", value=_date(member.joined_at))
+    embed.add_field(name="🎂 En Discord desde", value=_date(member.created_at))
+    # Las respuestas ya traen el emoji de cada opción del Onboarding (🌱 Early Career).
+    for title, labels in answers:
+        embed.add_field(name=title[:256], value=" · ".join(labels)[:1024])
+    if other_roles:
+        # Las menciones de rol en un embed se ven con su color y no notifican a nadie.
+        shown = " ".join(r.mention for r in other_roles[:MAX_PROFILE_ROLES])
+        if len(other_roles) > MAX_PROFILE_ROLES:
+            shown += f" y {len(other_roles) - MAX_PROFILE_ROLES} más"
+        embed.add_field(name="🏷️ Roles", value=shown, inline=False)
+    embed.set_footer(text=f"Puesto de llegada entre los {total} miembros de hoy")
+    return embed
+
+
+def _date(dt: datetime) -> str:
+    """Fecha y tiempo transcurrido; Discord los muestra en la hora de quien mira."""
+    return f"{discord.utils.format_dt(dt, 'D')}\n{discord.utils.format_dt(dt, 'R')}"
+
+
+def profile_bot() -> str:
+    return "Los bots no tenemos tarjeta. Ni falta que nos hace."
+
+
+def profile_pending(user_id: int) -> str:
+    return f"<@{user_id}> aún no acepta las reglas: su tarjeta sale después."
+
+
 def status_embed(
     checks: list[Check],
     latency: float,

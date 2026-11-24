@@ -27,6 +27,7 @@ EVENTS = [
     "roulette",
     "daily_topic",
     "greet",
+    "profile",
     "command_error",
 ]
 
