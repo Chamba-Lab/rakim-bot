@@ -78,7 +78,7 @@ Discord no informa la invitación usada, así que `invites.py` la deduce: en cad
 - El porcentaje es sobre el total de miembros contados. No cuenta bots ni a quien aún no acepta las reglas (`pending`).
 - **`todos`** (`/miembros alcance:todos`) agrega una tabla con cuántos miembros tiene cada rol del servidor, sin @everyone ni los roles de bots.
 
-Además de leer el Onboarding, usa la lista de miembros que el intent `members` ya mantiene en memoria; no guarda historial. Mismas restricciones que `/invitaciones` (canal de logs o de bump, Gestionar servidor). Es un comando aparte de `/invitaciones` porque cuentan cosas distintas: miembros actuales frente al acumulado de Discord. El cálculo (`members.py`) se prueba sin Discord.
+Además de leer el Onboarding, usa la lista de miembros que el intent `members` ya mantiene en memoria; no guarda historial. Solo para quien tiene Gestionar servidor, en las dos formas, pero en cualquier canal y con respuesta pública: así se le muestran los números a quien pregunta («¿cuántos de Perú somos?») sin pasar capturas. Es un comando aparte de `/invitaciones` porque cuentan cosas distintas: miembros actuales frente al acumulado de Discord. El cálculo (`members.py`) se prueba sin Discord.
 
 ## Perfil
 

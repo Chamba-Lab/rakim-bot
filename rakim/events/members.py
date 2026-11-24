@@ -16,6 +16,8 @@ async def setup(bot: RakimBot) -> None:
     # Cuántos miembros eligieron cada opción del Onboarding. Las preguntas se leen de
     # Discord en cada uso: no hay IDs que configurar y los cambios se reflejan solos. Es
     # aparte de `invitaciones`, que usa el acumulado de Discord (incluye a quienes salieron).
+    # Funciona en cualquier canal (la respuesta es pública) para mostrarle los números a
+    # quien pregunta; solo lo usa quien tiene Gestionar servidor.
     @commands.hybrid_command(  # type: ignore[arg-type]
         name="miembros",
         aliases=["members"],
@@ -29,13 +31,6 @@ async def setup(bot: RakimBot) -> None:
         ctx: commands.Context[RakimBot], alcance: Literal["todos", "all"] | None = None
     ) -> None:
         if ctx.guild is None or ctx.guild.id != bot.settings.guild_id:
-            return
-        if not bot.in_staff_channel(ctx.channel.id):
-            if ctx.interaction:
-                await ctx.reply(
-                    "Este comando solo funciona en el canal de logs o en el de bump.",
-                    ephemeral=True,
-                )
             return
         try:
             # Leer el Onboarding pide Gestionar servidor, el mismo permiso de las invitaciones.
