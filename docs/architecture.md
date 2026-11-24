@@ -84,7 +84,7 @@ Además de leer el Onboarding, usa la lista de miembros que el intent `members` 
 
 `profile.py` y el comando `/perfil [persona]` (o `@Rakim perfil @persona`). Muestra la tarjeta de miembro de quien lo pide o de la persona nombrada: un embed con su nombre, su avatar y el color de su rol más alto (sin color, el amarillo de la marca).
 
-- **Miembro #N**: el puesto por fecha de entrada entre las personas del servidor, sin bots y con quienes aún no aceptan las reglas (así el número no cambia cuando las aceptan). Discord no recuerda a quien salió: si sale alguien que entró antes, el número baja, y quien sale y vuelve pasa al final. El pie lo aclara («entre los N miembros de hoy»).
+- **Miembro #N de T**: el puesto por fecha de entrada entre las personas del servidor, sin bots y con quienes aún no aceptan las reglas (así el número no cambia cuando las aceptan). Discord no recuerda a quien salió: si sale alguien que entró antes, el número baja, y quien sale y vuelve pasa al final. T es el total con el que se cuenta, en la misma línea; no hay pie que lo repita.
 - **En Chamba desde** y **Cuenta de Discord**: fecha y tiempo transcurrido con las marcas de tiempo de Discord, que cada quien ve en su hora.
 - **Respuestas al Onboarding**: un campo por pregunta respondida, titulado con la pregunta y con el rol propio de cada opción elegida, como en `/miembros` (se reutiliza su lectura del Onboarding, con el emoji de cada opción: «🌱 Early Career»). Si no se puede leer el Onboarding, la tarjeta sale sin ellas.
 - **Roles**: los demás, de mayor a menor, como menciones (se ven con su color y en un embed no notifican), hasta 12. Sin @everyone, los roles del Onboarding (tampoco Member) ni los de bots o integraciones; el de Booster sí.

@@ -232,10 +232,10 @@ def profile_embed(
     color = member.color.value or YELLOW
     embed = discord.Embed(
         title=member.display_name,
-        description=f"{PODIUM.get(rank, '🏅')} Miembro **#{rank}** de Chamba Lab",
+        description=f"{PODIUM.get(rank, '🏅')} Miembro **#{rank}** de {total}",
         color=color,
     )
-    embed.set_author(name="Tarjeta de miembro")
+    embed.set_author(name="Tarjeta de miembro · Chamba Lab")
     embed.set_thumbnail(url=member.display_avatar.url)
     if member.joined_at:
         embed.add_field(name="🏠 En Chamba desde", value=_date(member.joined_at))
@@ -249,7 +249,6 @@ def profile_embed(
         if len(other_roles) > MAX_PROFILE_ROLES:
             shown += f" y {len(other_roles) - MAX_PROFILE_ROLES} más"
         embed.add_field(name="🏷️ Roles", value=shown, inline=False)
-    embed.set_footer(text=f"Puesto de llegada entre los {total} miembros de hoy")
     return embed
 
 
